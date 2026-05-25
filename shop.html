@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop Inventory Scanner</title>
+<meta name="theme-color" content="#4F81BD">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shop App">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --primary: #4F81BD;
+    --success: #5cb85c;
+    --danger: #d9534f;
+    --warning: #f0ad4e;
+    --low-stock: #fff3cd;
+  }
+  body { font-family: Arial, sans-serif; padding: 15px; background: #f5f5f5; margin: 0; }
+  h2 { text-align: center; }
+  input, select, button {
+    width: 100%; padding: 12px; margin: 8px 0;
+    border: 1px solid #ccc; border-radius: 8px; font-size: 16px;
+    box-sizing: border-box;
+  }
+  button { background: var(--primary); color: white; border: none; cursor: pointer; }
+  button.sell { background: var(--danger); }
+  button.restock { background: var(--success); }
+  button.export { background: var(--warning); }
+  button.filter { background: #6c757d; }
+  button.filter.active { background: var(--danger); }
+  button.backup { background: #17a2b8; }
+.card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+  th { background: var(--primary); color: white; }
+  #reader { width: 100%; }
+.negative { color: red; font-weight: bold; }
+.out-stock { background: #f8d7da; color: #721c24; font-weight: bold; }
+.low-stock { background: var(--low-stock); color: #856404; font-weight: bold; }
+.profit-box {
+    background: #dff0d8; padding: 15px; border-radius: 8px; margin-bottom: 15px;
+    display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap;
+  }
+.profit-item { margin: 5px 10px; }
+.profit-item h4 { margin: 0; font-size: 14px; color: #555; }
+.profit-item p { margin: 5px 0 0 0; font-size: 22px; font-weight: bold; color: #2e7d32; }
+.status-ok { color: green; }
+.status-out { color: red; font-weight: bold; }
+.status-low { color: #856404; font-weight: bold; }
+.filter-row { display: flex; gap: 10px; }
+.filter-row button { flex: 1; }
+.settings-row { display: flex; gap: 10px; }
+.settings-row > div { flex: 1; }
+.color-input { height: 45px; padding: 5px; }
+  details summary { cursor: pointer; font-weight: bold; font-size: 16px; }
+  textarea { width: 100%; height: 100px; font-family: monospace; font-size: 12px; }
+  .backup-note { font-size: 12px; color: #666; text-align: center; margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<h2 id="shopTitle">Shop Inventory Scanner</h2>
+
+<div class="profit-box" id="profitBox">
+  <div class="profit-item">
+    <h4>Today</h4>
+    <p id="profitToday">0</p>
+  </div>
+  <div class="profit-item">
+    <h4>This Month</h4>
+    <p id="profitMonth">0</p>
+  </div>
+  <div class="profit-item">
+    <h4>All Time</h4>
+    <p id="profitTotal">0</p>
+  </div>
+</div>
+
+<details class="card">
+  <summary>⚙️ Settings & Backup</summary>
+  <div class="settings-row">
+    <div>
+      <label>Shop Name</label>
+      <input id="setShopName" placeholder="My Shop">
+    </div>
+    <div>
+      <label>Currency</label>
+      <input id="setCurrency" placeholder="USD, KES, TZS">
+    </div>
+  </div>
+  <div class="settings-row">
+    <div>
+      <label>Primary Color</label>
+      <input type="color" id="setColor" class="color-input" value="#4F81BD">
+    </div>
+    <div>
+      <label>Low Stock Alert At</label>
+      <input type="number" id="setLowStock" placeholder="5" min="0">
+    </div>
+  </div>
+  <button onclick="saveSettings()">Save Settings</button>
+  <button onclick="resetSettings()" style="background:#6c757d;">Reset to Default</button>
+
+  <hr style="margin:15px 0;">
+  <h4>Manual Backup & Restore</h4>
+  <button class="backup" onclick="backupData()">Create Backup Now</button>
+  <textarea id="backupBox" placeholder="Your backup code appears here. Copy and save it."></textarea>
+  <input id="restoreBox" placeholder="Paste backup code here to restore">
+  <button onclick="restoreData()">Restore Data</button>
+  <p class="backup-note">Auto-backup runs automatically when you close the app</p>
+</details>
+
+<div class="card">
+  <h3>Scan Barcode</h3>
+  <div id="reader"></div>
+  <button onclick="startScan()">Start Camera</button>
+  <button onclick="stopScan()">Stop Camera</button>
+</div>
+
+<div class="card">
+  <h3>Add/Edit Product</h3>
+  <input id="pid" placeholder="Barcode scanned here">
+  <input id="pname" placeholder="Product Name e.g. Coca Cola 500ml">
+  <input id="buy" type="number" placeholder="Buying Price">
+  <input id="sell" type="number" placeholder="Selling Price">
+  <button onclick="addProduct()">Save Product</button>
+</div>
+
+<div class="card">
+  <h3>Transaction</h3>
+  <input id="tid" placeholder="Barcode">
+  <select id="ttype">
+    <option value="Sale">Sale</option>
+    <option value="Restock">Restock</option>
+  </select>
+  <input id="tqty" type="number" placeholder="Quantity">
+  <button class="restock" onclick="doTransaction('Restock')">Restock</button>
+  <button class="sell" onclick="doTransaction('Sale')">Sell</button>
+  <button class="export" onclick="exportExcel()">Export to Excel</button>
+</div>
+
+<div class="card">
+  <h3>Stock Dashboard</h3>
+  <div class="filter-row">
+    <button id="btnAll" class="filter active" onclick="setFilter('all')">All Products</button>
+    <button id="btnLow" class="filter" onclick="setFilter('low')">Low Stock</button>
+    <button id="btnOut" class="filter" onclick="setFilter('out')">Out of Stock</button>
+  </div>
+  <table id="dashboard">
+    <tr>
+      <th>Product</th>
+      <th>Stock In</th>
+      <th>Stock Out</th>
+      <th>In Stock</th>
+      <th>Status</th>
+      <th>Profit</th>
+    </tr>
+  </table>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js');
+  });
+}
+
+let products = JSON.parse(localStorage.getItem('products') || '[]');
+let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+let settings = JSON.parse(localStorage.getItem('settings') || '{}');
+let html5QrCode;
+let currentFilter = 'all';
+
+loadSettings();
+
+window.addEventListener('beforeunload', autoBackup);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) autoBackup();
+});
+
+function autoBackup() {
+  if (products.length === 0 && transactions.length === 0) return;
+  
+  let backup = {
+    products: products,
+    transactions: transactions,
+    settings: settings,
+    date: new Date().toISOString()
+  };
+  
+  let blob = new Blob([JSON.stringify(backup)], {type: 'application/json'});
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = `shop_backup_${new Date().toISOString().split('T')[0]}_${new Date().getHours()}${new Date().getMinutes()}.json`;
+  
+  let lastBackup = localStorage.getItem('lastAutoBackup');
+  let now = Date.now();
+  if (!lastBackup || now - lastBackup > 1800000) {
+    a.click();
+    localStorage.setItem('lastAutoBackup', now);
+  }
+  
+  URL.revokeObjectURL(url);
+}
+
+function loadSettings() {
+  document.getElementById('shopTitle').textContent = settings.shopName || 'Shop Inventory Scanner';
+  document.getElementById('setShopName').value = settings.shopName || '';
+  document.getElementById('setCurrency').value = settings.currency || '';
+  document.getElementById('setColor').value = settings.color || '#4F81BD';
+  document.getElementById('setLowStock').value = settings.lowStock || 5;
+
+  if (settings.color) {
+    document.documentElement.style.setProperty('--primary', settings.color);
+  }
+}
+
+function saveSettings() {
+  settings.shopName = document.getElementById('setShopName').value || 'Shop Inventory Scanner';
+  settings.currency = document.getElementById('setCurrency').value || '';
+  settings.color = document.getElementById('setColor').value;
+  settings.lowStock = parseInt(document.getElementById('setLowStock').value) || 5;
+
+  localStorage.setItem('settings', JSON.stringify(settings));
+  loadSettings();
+  render();
+  alert('Settings saved!');
+}
+
+function resetSettings() {
+  localStorage.removeItem('settings');
+  settings = {};
+  loadSettings();
+  document.documentElement.style.setProperty('--primary', '#4F81BD');
+  render();
+}
+
+function backupData() {
+  let backup = {
+    products: products,
+    transactions: transactions,
+    settings: settings,
+    date: new Date().toISOString()
+  };
+  let backupStr = btoa(JSON.stringify(backup));
+  document.getElementById('backupBox').value = backupStr;
+  alert('Backup created! Copy the code and save it somewhere safe.');
+}
+
+function restoreData() {
+  let code = document.getElementById('restoreBox').value.trim();
+  if (!code) return alert('Paste backup code first');
+
+  try {
+    let backup = JSON.parse(atob(code));
+    if (confirm('This will overwrite all current data. Continue?')) {
+      products = backup.products || [];
+      transactions = backup.transactions || [];
+      settings = backup.settings || {};
+
+      localStorage.setItem('products', JSON.stringify(products));
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+      localStorage.setItem('settings', JSON.stringify(settings));
+
+      loadSettings();
+      render();
+      alert('Data restored successfully!');
+    }
+  } catch(e) {
+    alert('Invalid backup code');
+  }
+}
+
+function formatMoney(amount) {
+  let curr = settings.currency? settings.currency + ' : '';
+  return curr + amount.toFixed(2);
+}
+
+function startScan() {
+  html5QrCode = new Html5Qrcode("reader");
+  html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
+    (decodedText) => {
+      document.getElementById('pid').value = decodedText;
+      document.getElementById('tid').value = decodedText;
+      stopScan();
+      let prod = products.find(p => p.id == decodedText);
+      if (prod) {
+        document.getElementById('pname').value = prod.name;
+        document.getElementById('buy').value = prod.buy;
+        document.getElementById('sell').value = prod.sell;
+      }
+    });
+}
+
+function stopScan() {
+  if (html5QrCode) html5QrCode.stop();
+}
+
+function addProduct() {
+  let p = {
+    id: document.getElementById('pid').value.trim(),
+    name: document.getElementById('pname').value.trim(),
+    buy: parseFloat(document.getElementById('buy').value) || 0,
+    sell: parseFloat(document.getElementById('sell').value) || 0,
+    stock: products.find(x => x.id == document.getElementById('pid').value)?.stock || 0
+  };
+  if (!p.id ||!p.name) return alert('Fill Barcode and Name');
+  products = products.filter(x => x.id!= p.id);
+  products.push(p);
+  save();
+  alert('Product saved');
+}
+
+function doTransaction(type) {
+  let id = document.getElementById('tid').value.trim();
+  let qty = parseInt(document.getElementById('tqty').value);
+  let prod = products.find(p => p.id == id);
+  if (!prod) return alert('Product not found. Add it first.');
+  if (!qty || qty <= 0) return alert('Enter valid qty');
+
+  let profit = 0;
+  if (type == 'Sale') {
+    profit = (prod.sell - prod.buy) * qty;
+  }
+
+  prod.stock += type == 'Restock'? qty : -qty;
+
+  transactions.unshift({
+    Date: new Date().toLocaleString(),
+    ISODate: new Date().toISOString(),
+    Barcode: id,
+    Product: prod.name,
+    Type: type,
+    Qty: qty,
+    Price: type == 'Sale'? prod.sell : prod.buy,
+    Total: qty * (type == 'Sale'? prod.sell : prod.buy),
+    Profit: profit
+  });
+
+  save();
+  document.getElementById('tqty').value = '';
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  document.getElementById('btnAll').classList.toggle('active', filter == 'all');
+  document.getElementById('btnLow').classList.toggle('active', filter == 'low');
+  document.getElementById('btnOut').classList.toggle('active', filter == 'out');
+  render();
+}
+
+function save() {
+  localStorage.setItem('products', JSON.stringify(products));
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  render();
+}
+
+function getStockStats(productId) {
+  let stockIn = transactions
+ .filter(t => t.Barcode == productId && t.Type == 'Restock')
+ .reduce((sum, t) => sum + t.Qty, 0);
+  let stockOut = transactions
+ .filter(t => t.Barcode == productId && t.Type == 'Sale')
+ .reduce((sum, t) => sum + t.Qty, 0);
+  let remaining = stockIn - stockOut;
+  return { stockIn, stockOut, remaining };
+}
+
+function render() {
+  let now = new Date();
+  let today = now.toISOString().split('T')[0];
+  let thisMonth = today.substring(0, 7);
+  let lowStockLimit = settings.lowStock || 5;
+
+  let profitToday = transactions
+ .filter(t => t.Type == 'Sale' && t.ISODate.startsWith(today))
+ .reduce((sum, t) => sum + t.Profit, 0);
+
+  let profitMonth = transactions
+ .filter(t => t.Type == 'Sale' && t.ISODate.startsWith(thisMonth))
+ .reduce((sum, t) => sum + t.Profit, 0);
+
+  let profitTotal = transactions
+ .filter(t => t.Type == 'Sale')
+ .reduce((sum, t) => sum + t.Profit, 0);
+
+  document.getElementById('profitToday').innerHTML = formatMoney(profitToday);
+  document.getElementById('profitMonth').innerHTML = formatMoney(profitMonth);
+  document.getElementById('profitTotal').innerHTML = formatMoney(profitTotal);
+
+  let html = '<tr><th>Product</th><th>Stock In</th><th>Stock Out</th><th>In Stock</th><th>Status</th><th>Profit</th></tr>';
+
+  let filteredProducts = products.filter(p => {
+    let stats = getStockStats(p.id);
+    if (currentFilter == 'out') return stats.remaining <= 0;
+    if (currentFilter == 'low') return stats.remaining > 0 && stats.remaining <= lowStockLimit;
+    return true;
+  });
+
+  if (filteredProducts.length == 0) {
+    html += '<tr><td colspan="6">No products found</td></tr>';
+  }
+
+  filteredProducts.forEach(p => {
+    let stats = getStockStats(p.id);
+    let productProfit = transactions
+   .filter(t => t.Barcode == p.id && t.Type == 'Sale')
+   .reduce((sum, t) => sum + t.Profit, 0);
+
+    let status, rowClass, remainingClass = '';
+
+    if (stats.remaining <= 0) {
+      status = '<span class="status-out">OUT OF STOCK</span>';
+      rowClass = 'class="out-stock"';
+    } else if (stats.remaining <= lowStockLimit) {
+      status = '<span class="status-low">LOW STOCK</span>';
+      rowClass = 'class="low-stock"';
+    } else {
+      status = '<span class="status-ok">In Stock</span>';
+    }
+
+    if (stats.remaining < 0) remainingClass = 'class="negative"';
+
+    html += `<tr ${rowClass}>
+      <td>${p.name}<br><small>${p.id}</small></td>
+      <td>${stats.stockIn}</td>
+      <td>${stats.stockOut}</td>
+      <td ${remainingClass}>${stats.remaining}</td>
+      <td>${status}</td>
+      <td>${formatMoney(productProfit)}</td>
+    </tr>`;
+  });
+
+  document.getElementById('dashboard').innerHTML = html;
+}
+
+function exportExcel() {
+  if (products.length == 0 && transactions.length == 0) {
+    return alert('No data to export');
+  }
+
+  let wb = XLSX.utils.book_new();
+  let lowStockLimit = settings.lowStock || 5;
+
+  let productData = products.map(p => {
+    let stats = getStockStats(p.id);
+    let profit = transactions.filter(t => t.Barcode == p.id).reduce((s, t) => s + (t.Profit || 0), 0);
+    let status = stats.remaining <= 0? 'OUT OF STOCK' :
+                 stats.remaining <= lowStockLimit? 'LOW STOCK' : 'In Stock';
+    return {
+      Barcode: p.id,
+      Name: p.name,
+      'Stock In': stats.stockIn,
+      'Stock Out': stats.stockOut,
+      'In Stock': stats.remaining,
+      Status: status,
+      'Buying Price': p.buy,
+      'Selling Price': p.sell,
+      'Total Profit': profit
+    };
+  });
+  let ws1 = XLSX.utils.json_to_sheet(productData);
+  XLSX.utils.book_append_sheet(wb, ws1, "Products");
+
+  if (transactions.length > 0) {
+    let ws2 = XLSX.utils.json_to_sheet(transactions);
+    XLSX.utils.book_append_sheet(wb, ws2, "Transactions");
+  }
+
+  let totalSales = transactions.filter(t => t.Type == 'Sale').reduce((sum, t) => sum + t.Total, 0);
+  let totalCost = transactions.filter(t => t.Type == 'Restock').reduce((sum, t) => sum + t.Total, 0);
+  let profit = transactions.reduce((sum, t) => sum + (t.Profit || 0), 0);
+
+  let summary = [
+    {Metric: 'Low Stock Limit', Value: lowStockLimit},
+    {Metric: 'Total Stock Value', Value: products.reduce((s, p) => s + getStockStats(p.id).remaining * p.buy, 0)},
+    {Metric: 'Total Sales', Value: totalSales},
+    {Metric: 'Total Purchases', Value: totalCost},
+    {Metric: 'Total Profit', Value: profit}
+  ];
+  let ws3 = XLSX.utils.json_to_sheet(summary);
+  XLSX.utils.book_append_sheet(wb, ws3, "Summary");
+
+  XLSX.writeFile(wb, `Shop_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+render();
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop Inventory Scanner</title>
+<meta name="theme-color" content="#4F81BD">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shop App">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --primary: #4F81BD;
+    --success: #5cb85c;
+    --danger: #d9534f;
+    --warning: #f0ad4e;
+    --low-stock: #fff3cd;
+  }
+  body { font-family: Arial, sans-serif; padding: 15px; background: #f5f5f5; margin: 0; }
+  h2 { text-align: center; }
+  input, select, button {
+    width: 100%; padding: 12px; margin: 8px 0;
+    border: 1px solid #ccc; border-radius: 8px; font-size: 16px;
+    box-sizing: border-box;
+  }
+  button { background: var(--primary); color: white; border: none; cursor: pointer; }
+  button.sell { background: var(--danger); }
+  button.restock { background: var(--success); }
+  button.export { background: var(--warning); }
+  button.filter { background: #6c757d; }
+  button.filter.active { background: var(--danger); }
+  button.backup { background: #17a2b8; }
+.card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+  th { background: var(--primary); color: white; }
+  #reader { width: 100%; }
+.negative { color: red; font-weight: bold; }
+.out-stock { background: #f8d7da; color: #721c24; font-weight: bold; }
+.low-stock { background: var(--low-stock); color: #856404; font-weight: bold; }
+.profit-box {
+    background: #dff0d8; padding: 15px; border-radius: 8px; margin-bottom: 15px;
+    display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap;
+  }
+.profit-item { margin: 5px 10px; }
+.profit-item h4 { margin: 0; font-size: 14px; color: #555; }
+.profit-item p { margin: 5px 0 0 0; font-size: 22px; font-weight: bold; color: #2e7d32; }
+.status-ok { color: green; }
+.status-out { color: red; font-weight: bold; }
+.status-low { color: #856404; font-weight: bold; }
+.filter-row { display: flex; gap: 10px; }
+.filter-row button { flex: 1; }
+.settings-row { display: flex; gap: 10px; }
+.settings-row > div { flex: 1; }
+.color-input { height: 45px; padding: 5px; }
+  details summary { cursor: pointer; font-weight: bold; font-size: 16px; }
+  textarea { width: 100%; height: 100px; font-family: monospace; font-size: 12px; }
+  .backup-note { font-size: 12px; color: #666; text-align: center; margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<h2 id="shopTitle">Shop Inventory Scanner</h2>
+
+<div class="profit-box" id="profitBox">
+  <div class="profit-item">
+    <h4>Today</h4>
+    <p id="profitToday">0</p>
+  </div>
+  <div class="profit-item">
+    <h4>This Month</h4>
+    <p id="profitMonth">0</p>
+  </div>
+  <div class="profit-item">
+    <h4>All Time</h4>
+    <p id="profitTotal">0</p>
+  </div>
+</div>
+
+<details class="card">
+  <summary>⚙️ Settings & Backup</summary>
+  <div class="settings-row">
+    <div>
+      <label>Shop Name</label>
+      <input id="setShopName" placeholder="My Shop">
+    </div>
+    <div>
+      <label>Currency</label>
+      <input id="setCurrency" placeholder="USD, KES, TZS">
+    </div>
+  </div>
+  <div class="settings-row">
+    <div>
+      <label>Primary Color</label>
+      <input type="color" id="setColor" class="color-input" value="#4F81BD">
+    </div>
+    <div>
+      <label>Low Stock Alert At</label>
+      <input type="number" id="setLowStock" placeholder="5" min="0">
+    </div>
+  </div>
+  <button onclick="saveSettings()">Save Settings</button>
+  <button onclick="resetSettings()" style="background:#6c757d;">Reset to Default</button>
+
+  <hr style="margin:15px 0;">
+  <h4>Manual Backup & Restore</h4>
+  <button class="backup" onclick="backupData()">Create Backup Now</button>
+  <textarea id="backupBox" placeholder="Your backup code appears here. Copy and save it."></textarea>
+  <input id="restoreBox" placeholder="Paste backup code here to restore">
+  <button onclick="restoreData()">Restore Data</button>
+  <p class="backup-note">Auto-backup runs automatically when you close the app</p>
+</details>
+
+<div class="card">
+  <h3>Scan Barcode</h3>
+  <div id="reader"></div>
+  <button onclick="startScan()">Start Camera</button>
+  <button onclick="stopScan()">Stop Camera</button>
+</div>
+
+<div class="card">
+  <h3>Add/Edit Product</h3>
+  <input id="pid" placeholder="Barcode scanned here">
+  <input id="pname" placeholder="Product Name e.g. Coca Cola 500ml">
+  <input id="buy" type="number" placeholder="Buying Price">
+  <input id="sell" type="number" placeholder="Selling Price">
+  <button onclick="addProduct()">Save Product</button>
+</div>
+
+<div class="card">
+  <h3>Transaction</h3>
+  <input id="tid" placeholder="Barcode">
+  <select id="ttype">
+    <option value="Sale">Sale</option>
+    <option value="Restock">Restock</option>
+  </select>
+  <input id="tqty" type="number" placeholder="Quantity">
+  <button class="restock" onclick="doTransaction('Restock')">Restock</button>
+  <button class="sell" onclick="doTransaction('Sale')">Sell</button>
+  <button class="export" onclick="exportExcel()">Export to Excel</button>
+</div>
+
+<div class="card">
+  <h3>Stock Dashboard</h3>
+  <div class="filter-row">
+    <button id="btnAll" class="filter active" onclick="setFilter('all')">All Products</button>
+    <button id="btnLow" class="filter" onclick="setFilter('low')">Low Stock</button>
+    <button id="btnOut" class="filter" onclick="setFilter('out')">Out of Stock</button>
+  </div>
+  <table id="dashboard">
+    <tr>
+      <th>Product</th>
+      <th>Stock In</th>
+      <th>Stock Out</th>
+      <th>In Stock</th>
+      <th>Status</th>
+      <th>Profit</th>
+    </tr>
+  </table>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js');
+  });
+}
+
+let products = JSON.parse(localStorage.getItem('products') || '[]');
+let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+let settings = JSON.parse(localStorage.getItem('settings') || '{}');
+let html5QrCode;
+let currentFilter = 'all';
+
+loadSettings();
+
+window.addEventListener('beforeunload', autoBackup);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) autoBackup();
+});
+
+function autoBackup() {
+  if (products.length === 0 && transactions.length === 0) return;
+  
+  let backup = {
+    products: products,
+    transactions: transactions,
+    settings: settings,
+    date: new Date().toISOString()
+  };
+  
+  let blob = new Blob([JSON.stringify(backup)], {type: 'application/json'});
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = `shop_backup_${new Date().toISOString().split('T')[0]}_${new Date().getHours()}${new Date().getMinutes()}.json`;
+  
+  let lastBackup = localStorage.getItem('lastAutoBackup');
+  let now = Date.now();
+  if (!lastBackup || now - lastBackup > 1800000) {
+    a.click();
+    localStorage.setItem('lastAutoBackup', now);
+  }
+  
+  URL.revokeObjectURL(url);
+}
+
+function loadSettings() {
+  document.getElementById('shopTitle').textContent = settings.shopName || 'Shop Inventory Scanner';
+  document.getElementById('setShopName').value = settings.shopName || '';
+  document.getElementById('setCurrency').value = settings.currency || '';
+  document.getElementById('setColor').value = settings.color || '#4F81BD';
+  document.getElementById('setLowStock').value = settings.lowStock || 5;
+
+  if (settings.color) {
+    document.documentElement.style.setProperty('--primary', settings.color);
+  }
+}
+
+function saveSettings() {
+  settings.shopName = document.getElementById('setShopName').value || 'Shop Inventory Scanner';
+  settings.currency = document.getElementById('setCurrency').value || '';
+  settings.color = document.getElementById('setColor').value;
+  settings.lowStock = parseInt(document.getElementById('setLowStock').value) || 5;
+
+  localStorage.setItem('settings', JSON.stringify(settings));
+  loadSettings();
+  render();
+  alert('Settings saved!');
+}
+
+function resetSettings() {
+  localStorage.removeItem('settings');
+  settings = {};
+  loadSettings();
+  document.documentElement.style.setProperty('--primary', '#4F81BD');
+  render();
+}
+
+function backupData() {
+  let backup = {
+    products: products,
+    transactions: transactions,
+    settings: settings,
+    date: new Date().toISOString()
+  };
+  let backupStr = btoa(JSON.stringify(backup));
+  document.getElementById('backupBox').value = backupStr;
+  alert('Backup created! Copy the code and save it somewhere safe.');
+}
+
+function restoreData() {
+  let code = document.getElementById('restoreBox').value.trim();
+  if (!code) return alert('Paste backup code first');
+
+  try {
+    let backup = JSON.parse(atob(code));
+    if (confirm('This will overwrite all current data. Continue?')) {
+      products = backup.products || [];
+      transactions = backup.transactions || [];
+      settings = backup.settings || {};
+
+      localStorage.setItem('products', JSON.stringify(products));
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+      localStorage.setItem('settings', JSON.stringify(settings));
+
+      loadSettings();
+      render();
+      alert('Data restored successfully!');
+    }
+  } catch(e) {
+    alert('Invalid backup code');
+  }
+}
+
+function formatMoney(amount) {
+  let curr = settings.currency? settings.currency + ' : '';
+  return curr + amount.toFixed(2);
+}
+
+function startScan() {
+  html5QrCode = new Html5Qrcode("reader");
+  html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
+    (decodedText) => {
+      document.getElementById('pid').value = decodedText;
+      document.getElementById('tid').value = decodedText;
+      stopScan();
+      let prod = products.find(p => p.id == decodedText);
+      if (prod) {
+        document.getElementById('pname').value = prod.name;
+        document.getElementById('buy').value = prod.buy;
+        document.getElementById('sell').value = prod.sell;
+      }
+    });
+}
+
+function stopScan() {
+  if (html5QrCode) html5QrCode.stop();
+}
+
+function addProduct() {
+  let p = {
+    id: document.getElementById('pid').value.trim(),
+    name: document.getElementById('pname').value.trim(),
+    buy: parseFloat(document.getElementById('buy').value) || 0,
+    sell: parseFloat(document.getElementById('sell').value) || 0,
+    stock: products.find(x => x.id == document.getElementById('pid').value)?.stock || 0
+  };
+  if (!p.id ||!p.name) return alert('Fill Barcode and Name');
+  products = products.filter(x => x.id!= p.id);
+  products.push(p);
+  save();
+  alert('Product saved');
+}
+
+function doTransaction(type) {
+  let id = document.getElementById('tid').value.trim();
+  let qty = parseInt(document.getElementById('tqty').value);
+  let prod = products.find(p => p.id == id);
+  if (!prod) return alert('Product not found. Add it first.');
+  if (!qty || qty <= 0) return alert('Enter valid qty');
+
+  let profit = 0;
+  if (type == 'Sale') {
+    profit = (prod.sell - prod.buy) * qty;
+  }
+
+  prod.stock += type == 'Restock'? qty : -qty;
+
+  transactions.unshift({
+    Date: new Date().toLocaleString(),
+    ISODate: new Date().toISOString(),
+    Barcode: id,
+    Product: prod.name,
+    Type: type,
+    Qty: qty,
+    Price: type == 'Sale'? prod.sell : prod.buy,
+    Total: qty * (type == 'Sale'? prod.sell : prod.buy),
+    Profit: profit
+  });
+
+  save();
+  document.getElementById('tqty').value = '';
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  document.getElementById('btnAll').classList.toggle('active', filter == 'all');
+  document.getElementById('btnLow').classList.toggle('active', filter == 'low');
+  document.getElementById('btnOut').classList.toggle('active', filter == 'out');
+  render();
+}
+
+function save() {
+  localStorage.setItem('products', JSON.stringify(products));
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  render();
+}
+
+function getStockStats(productId) {
+  let stockIn = transactions
+ .filter(t => t.Barcode == productId && t.Type == 'Restock')
+ .reduce((sum, t) => sum + t.Qty, 0);
+  let stockOut = transactions
+ .filter(t => t.Barcode == productId && t.Type == 'Sale')
+ .reduce((sum, t) => sum + t.Qty, 0);
+  let remaining = stockIn - stockOut;
+  return { stockIn, stockOut, remaining };
+}
+
+function render() {
+  let now = new Date();
+  let today = now.toISOString().split('T')[0];
+  let thisMonth = today.substring(0, 7);
+  let lowStockLimit = settings.lowStock || 5;
+
+  let profitToday = transactions
+ .filter(t => t.Type == 'Sale' && t.ISODate.startsWith(today))
+ .reduce((sum, t) => sum + t.Profit, 0);
+
+  let profitMonth = transactions
+ .filter(t => t.Type == 'Sale' && t.ISODate.startsWith(thisMonth))
+ .reduce((sum, t) => sum + t.Profit, 0);
+
+  let profitTotal = transactions
+ .filter(t => t.Type == 'Sale')
+ .reduce((sum, t) => sum + t.Profit, 0);
+
+  document.getElementById('profitToday').innerHTML = formatMoney(profitToday);
+  document.getElementById('profitMonth').innerHTML = formatMoney(profitMonth);
+  document.getElementById('profitTotal').innerHTML = formatMoney(profitTotal);
+
+  let html = '<tr><th>Product</th><th>Stock In</th><th>Stock Out</th><th>In Stock</th><th>Status</th><th>Profit</th></tr>';
+
+  let filteredProducts = products.filter(p => {
+    let stats = getStockStats(p.id);
+    if (currentFilter == 'out') return stats.remaining <= 0;
+    if (currentFilter == 'low') return stats.remaining > 0 && stats.remaining <= lowStockLimit;
+    return true;
+  });
+
+  if (filteredProducts.length == 0) {
+    html += '<tr><td colspan="6">No products found</td></tr>';
+  }
+
+  filteredProducts.forEach(p => {
+    let stats = getStockStats(p.id);
+    let productProfit = transactions
+   .filter(t => t.Barcode == p.id && t.Type == 'Sale')
+   .reduce((sum, t) => sum + t.Profit, 0);
+
+    let status, rowClass, remainingClass = '';
+
+    if (stats.remaining <= 0) {
+      status = '<span class="status-out">OUT OF STOCK</span>';
+      rowClass = 'class="out-stock"';
+    } else if (stats.remaining <= lowStockLimit) {
+      status = '<span class="status-low">LOW STOCK</span>';
+      rowClass = 'class="low-stock"';
+    } else {
+      status = '<span class="status-ok">In Stock</span>';
+    }
+
+    if (stats.remaining < 0) remainingClass = 'class="negative"';
+
+    html += `<tr ${rowClass}>
+      <td>${p.name}<br><small>${p.id}</small></td>
+      <td>${stats.stockIn}</td>
+      <td>${stats.stockOut}</td>
+      <td ${remainingClass}>${stats.remaining}</td>
+      <td>${status}</td>
+      <td>${formatMoney(productProfit)}</td>
+    </tr>`;
+  });
+
+  document.getElementById('dashboard').innerHTML = html;
+}
+
+function exportExcel() {
+  if (products.length == 0 && transactions.length == 0) {
+    return alert('No data to export');
+  }
+
+  let wb = XLSX.utils.book_new();
+  let lowStockLimit = settings.lowStock || 5;
+
+  let productData = products.map(p => {
+    let stats = getStockStats(p.id);
+    let profit = transactions.filter(t => t.Barcode == p.id).reduce((s, t) => s + (t.Profit || 0), 0);
+    let status = stats.remaining <= 0? 'OUT OF STOCK' :
+                 stats.remaining <= lowStockLimit? 'LOW STOCK' : 'In Stock';
+    return {
+      Barcode: p.id,
+      Name: p.name,
+      'Stock In': stats.stockIn,
+      'Stock Out': stats.stockOut,
+      'In Stock': stats.remaining,
+      Status: status,
+      'Buying Price': p.buy,
+      'Selling Price': p.sell,
+      'Total Profit': profit
+    };
+  });
+  let ws1 = XLSX.utils.json_to_sheet(productData);
+  XLSX.utils.book_append_sheet(wb, ws1, "Products");
+
+  if (transactions.length > 0) {
+    let ws2 = XLSX.utils.json_to_sheet(transactions);
+    XLSX.utils.book_append_sheet(wb, ws2, "Transactions");
+  }
+
+  let totalSales = transactions.filter(t => t.Type == 'Sale').reduce((sum, t) => sum + t.Total, 0);
+  let totalCost = transactions.filter(t => t.Type == 'Restock').reduce((sum, t) => sum + t.Total, 0);
+  let profit = transactions.reduce((sum, t) => sum + (t.Profit || 0), 0);
+
+  let summary = [
+    {Metric: 'Low Stock Limit', Value: lowStockLimit},
+    {Metric: 'Total Stock Value', Value: products.reduce((s, p) => s + getStockStats(p.id).remaining * p.buy, 0)},
+    {Metric: 'Total Sales', Value: totalSales},
+    {Metric: 'Total Purchases', Value: totalCost},
+    {Metric: 'Total Profit', Value: profit}
+  ];
+  let ws3 = XLSX.utils.json_to_sheet(summary);
+  XLSX.utils.book_append_sheet(wb, ws3, "Summary");
+
+  XLSX.writeFile(wb, `Shop_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+render();
+</script>
+
+</body>
+</html>
