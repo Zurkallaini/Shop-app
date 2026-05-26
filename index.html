@@ -7,114 +7,48 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-  body {
-    background: linear-gradient(135deg, #e8f0fe 0%, #f5f7fa 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
-.phone {
-    width: 100%;
-    max-width: 380px;
-    background: white;
-    border-radius: 30px;
-    padding: 30px 25px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-  }
-
-.illustration { text-align: center; margin-bottom: 25px; }
-
+  body { background: linear-gradient(135deg, #e8f0fe 0%, #f5f7fa 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+ .phone { width: 100%; max-width: 380px; background: white; border-radius: 30px; padding: 30px 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+ .illustration { text-align: center; margin-bottom: 25px; }
   h2 { font-size: 28px; font-weight: 700; color: #1a1a1a; margin-bottom: 5px; }
-.subtitle { color: #888; font-size: 14px; margin-bottom: 25px; }
-
-.input-group { position: relative; margin-bottom: 15px; }
-.input-group input {
-    width: 100%; padding: 15px 15px 15px 45px; border: none;
-    background: #f5f7fa; border-radius: 12px; font-size: 15px; outline: none;
-  }
-.input-group.icon {
-    position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888;
-  }
-.input-group.toggle-pass {
-    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-    cursor: pointer; color: #888;
-  }
-
-.options {
-    display: flex; justify-content: space-between; align-items: center;
-    margin: 15px 0 20px; font-size: 14px;
-  }
-.toggle-switch { display: flex; align-items: center; gap: 8px; color: #666; }
-.toggle-switch input[type="checkbox"] {
-    width: 40px; height: 22px; appearance: none; background: #ddd;
-    border-radius: 20px; position: relative; cursor: pointer;
-  }
-.toggle-switch input:checked { background: #1e3a8a; }
-.toggle-switch input:checked::after { left: 20px; }
-.toggle-switch input::after {
-    content: ''; position: absolute; width: 18px; height: 18px; background: white;
-    border-radius: 50%; top: 2px; left: 2px; transition: 0.3s;
-  }
-
-.btn-primary {
-    width: 100%; padding: 15px; background: #1e3a8a; color: white;
-    border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;
-  }
-.btn-primary:hover { background: #1e40af; }
-
-.switch-link {
-    text-align: center; margin-top: 15px; font-size: 14px; color: #666;
-  }
-.switch-link a { color: #1e3a8a; text-decoration: none; font-weight: 600; cursor: pointer; }
-
-.success-msg {
-    background: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px;
-    margin-bottom: 15px; text-align: center; display: none;
-  }
-.error-msg { color: #dc2626; font-size: 14px; margin-bottom: 10px; text-align: center; }
-
-.hidden { display: none!important; }
-
-  /* App section */
-.app-container {
-    width: 100%; max-width: 1100px; background: white; padding: 25px;
-    border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  }
-.app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
-.form-grid input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
-
+ .subtitle { color: #888; font-size: 14px; margin-bottom: 25px; }
+ .input-group { position: relative; margin-bottom: 15px; }
+ .input-group input { width: 100%; padding: 15px 15px 15px 45px; border: none; background: #f5f7fa; border-radius: 12px; font-size: 15px; outline: none; }
+ .input-group.icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; font-size: 18px; }
+ .input-group.toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; font-size: 18px; user-select: none; }
+ .options { display: flex; justify-content: space-between; align-items: center; margin: 15px 0 20px; font-size: 14px; }
+ .toggle-switch { display: flex; align-items: center; gap: 8px; color: #666; }
+ .toggle-switch input[type="checkbox"] { width: 40px; height: 22px; appearance: none; background: #ddd; border-radius: 20px; position: relative; cursor: pointer; }
+ .toggle-switch input:checked { background: #1e3a8a; }
+ .toggle-switch input:checked::after { left: 20px; }
+ .toggle-switch input::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; }
+ .btn-primary { width: 100%; padding: 15px; background: #1e3a8a; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
+ .btn-primary:hover { background: #1e40af; }
+ .switch-link { text-align: center; margin-top: 15px; font-size: 14px; color: #666; }
+ .switch-link a { color: #1e3a8a; text-decoration: none; font-weight: 600; cursor: pointer; }
+ .success-msg { background: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; display: none; }
+ .error-msg { color: #dc2626; font-size: 14px; margin-bottom: 10px; text-align: center; }
+ .hidden { display: none!important; }
+ .app-container { width: 100%; max-width: 1100px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+ .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+ .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
+ .form-grid input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
   table { width: 100%; border-collapse: collapse; margin-top: 15px; }
   th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
   th { background: #f8f9fa; font-weight: 600; }
-
-.btn { padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
-.btn-in { background: #10b981; color: white; }
-.btn-out { background: #f59e0b; color: white; }
-.btn-history { background: #6366f1; color: white; }
-.btn-logout { background: #ef4444; color: white; padding: 10px 18px; }
-
-  /* Modal */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-           background: rgba(0,0,0,0.5); z-index: 1000; }
-.modal-content {
-    background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 650px;
-    border-radius: 15px; max-height: 80vh; overflow-y: auto;
-  }
-.close { float: right; font-size: 28px; cursor: pointer; color: #888; }
+ .btn { padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+ .btn-in { background: #10b981; color: white; }
+ .btn-out { background: #f59e0b; color: white; }
+ .btn-history { background: #6366f1; color: white; }
+ .btn-logout { background: #ef4444; color: white; padding: 10px 18px; }
+ .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+ .modal-content { background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 650px; border-radius: 15px; max-height: 80vh; overflow-y: auto; }
+ .close { float: right; font-size: 28px; cursor: pointer; color: #888; }
 </style>
 </head>
 <body>
 
-<!-- Auth Section -->
 <div id="auth-section" class="phone">
-
-  <!-- Register Form -->
   <div id="register-form">
     <div class="illustration">
       <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
@@ -125,10 +59,8 @@
     </div>
     <h2>Register</h2>
     <p class="subtitle">Please register to login.</p>
-
     <div id="register-success" class="success-msg">Registration successful! Please login.</div>
     <div id="register-error" class="error-msg"></div>
-
     <div class="input-group">
       <span class="icon">👤</span>
       <input type="email" id="reg-email" placeholder="Email">
@@ -140,28 +72,25 @@
     <div class="input-group">
       <span class="icon">🔒</span>
       <input type="password" id="reg-password" placeholder="Password">
-      <span class="toggle-pass" onclick="togglePass('reg-password')">👁️</span>
+      <span class="toggle-pass" onclick="togglePass('reg-password', this)">👁️</span>
     </div>
     <div class="input-group">
       <span class="icon">🔒</span>
       <input type="password" id="reg-confirm-password" placeholder="Confirm Password">
-      <span class="toggle-pass" onclick="togglePass('reg-confirm-password')">👁️</span>
+      <span class="toggle-pass" onclick="togglePass('reg-confirm-password', this)">👁️</span>
     </div>
-
     <div class="options">
       <label class="toggle-switch">
         <span>Remember me</span>
         <input type="checkbox" id="reg-remember">
       </label>
     </div>
-
     <button class="btn-primary" onclick="signUp()">Sign Up</button>
     <div class="switch-link">
       Already have account? <a onclick="showLogin()">Sign In</a>
     </div>
   </div>
 
-  <!-- Login Form -->
   <div id="login-form" class="hidden">
     <div class="illustration">
       <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
@@ -173,9 +102,7 @@
     </div>
     <h2>Login</h2>
     <p class="subtitle">Please Sign in to continue.</p>
-
     <div id="login-error" class="error-msg"></div>
-
     <div class="input-group">
       <span class="icon">👤</span>
       <input type="email" id="login-email" placeholder="Email">
@@ -183,16 +110,14 @@
     <div class="input-group">
       <span class="icon">🔒</span>
       <input type="password" id="login-password" placeholder="Password">
-      <span class="toggle-pass" onclick="togglePass('login-password')">👁️</span>
+      <span class="toggle-pass" onclick="togglePass('login-password', this)">👁️</span>
     </div>
-
     <div class="options">
       <label class="toggle-switch">
         <span>Remember me</span>
         <input type="checkbox" id="login-remember">
       </label>
     </div>
-
     <button class="btn-primary" onclick="signIn()">Sign In</button>
     <div class="switch-link">
       Don't have account? <a onclick="showRegister()">Sign Up</a>
@@ -200,13 +125,11 @@
   </div>
 </div>
 
-<!-- App Section -->
 <div id="app-section" class="app-container hidden">
   <div class="app-header">
     <h2>Your Products</h2>
     <button class="btn btn-logout" onclick="signOut()">Logout</button>
   </div>
-
   <h3>Add New Product</h3>
   <div class="form-grid">
     <input type="text" id="barcode" placeholder="Barcode">
@@ -216,27 +139,19 @@
     <input type="number" id="stock" placeholder="Initial Stock">
   </div>
   <button class="btn-primary" style="margin-bottom:30px;" onclick="addProduct()">Add Product</button>
-
   <h3>Products</h3>
   <table id="products-table">
-    <thead>
-      <tr>
-        <th>Name</th><th>Barcode</th><th>Buy</th><th>Sell</th><th>Stock</th><th>Action</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Name</th><th>Barcode</th><th>Buy</th><th>Sell</th><th>Stock</th><th>Action</th></tr></thead>
     <tbody></tbody>
   </table>
 </div>
 
-<!-- History Modal -->
 <div id="historyModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeHistory()">&times;</span>
     <h3 id="historyTitle">Stock History</h3>
     <table id="history-table">
-      <thead>
-        <tr><th>Date</th><th>Type</th><th>Qty</th><th>Note</th></tr>
-      </thead>
+      <thead><tr><th>Date</th><th>Type</th><th>Qty</th><th>Note</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
@@ -258,13 +173,20 @@ function showRegister() {
   document.getElementById('register-form').classList.remove('hidden');
 }
 
-function togglePass(id) {
+function togglePass(id, btn) {
   const input = document.getElementById(id);
-  input.type = input.type === 'password'? 'text' : 'password';
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+  }
 }
 
 async function signUp() {
-  const email = document.getElementById('reg-email').value;
+  const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value;
   const confirmPassword = document.getElementById('reg-confirm-password').value;
   const errorDiv = document.getElementById('register-error');
@@ -302,10 +224,9 @@ async function signUp() {
 }
 
 async function signIn() {
-  const email = document.getElementById('login-email').value;
+  const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   const errorDiv = document.getElementById('login-error');
-
   errorDiv.textContent = '';
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -334,7 +255,7 @@ async function signOut() {
 }
 
 async function addProduct() {
-  const { data: { user } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
   const product = {
@@ -374,9 +295,7 @@ function clearInputs() {
 async function adjustStock(productId, type) {
   const qty = prompt(`Enter quantity to ${type}:`);
   if (!qty || isNaN(qty) || qty <= 0) return;
-
   const note = prompt(`Add a note for this ${type} movement:`);
-
   const { data: { user } = await supabase.auth.getUser();
 
   await supabase.from('stock_movements').insert([{
@@ -397,32 +316,17 @@ async function adjustStock(productId, type) {
 
 async function viewHistory(productId, productName) {
   document.getElementById('historyTitle').textContent = `History: ${productName}`;
-
-  const { data } = await supabase
- .from('stock_movements')
- .select('*')
- .eq('product_id', productId)
- .order('created_at', { ascending: false });
-
+  const { data } = await supabase.from('stock_movements').select('*').eq('product_id', productId).order('created_at', { ascending: false });
   const tbody = document.querySelector('#history-table tbody');
   tbody.innerHTML = '';
-
   if (data && data.length > 0) {
     data.forEach(m => {
       const date = new Date(m.created_at).toLocaleString();
-      tbody.innerHTML += `
-        <tr>
-          <td>${date}</td>
-          <td style="color:${m.type==='IN'?'#10b981':'#f59e0b'}; font-weight:600;">${m.type}</td>
-          <td>${m.quantity}</td>
-          <td>${m.note || '-'}</td>
-        </tr>
-      `;
+      tbody.innerHTML += `<tr><td>${date}</td><td style="color:${m.type==='IN'?'#10b981':'#f59e0b'}; font-weight:600;">${m.type}</td><td>${m.quantity}</td><td>${m.note || '-'}</td></tr>`;
     });
   } else {
     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No history yet</td></tr>';
   }
-
   document.getElementById('historyModal').style.display = 'block';
 }
 
@@ -439,31 +343,12 @@ window.onclick = function(event) {
 async function loadProducts() {
   const { data: { user } = await supabase.auth.getUser();
   if (!user) return;
-
-  const { data } = await supabase
-.from('products')
-.select('*')
-.eq('user_id', user.id)
-.order('created_at', { ascending: false });
-
+  const { data } = await supabase.from('products').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
   const tbody = document.querySelector('#products-table tbody');
   tbody.innerHTML = '';
   if (data) {
     data.forEach(p => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${p.name}</td>
-          <td>${p.barcode || ''}</td>
-          <td>${p.buy_price}</td>
-          <td>${p.sell_price}</td>
-          <td><strong>${p.stock}</strong></td>
-          <td>
-            <button class="btn btn-in" onclick="adjustStock(${p.id}, 'IN')">Stock In</button>
-            <button class="btn btn-out" onclick="adjustStock(${p.id}, 'OUT')">Stock Out</button>
-            <button class="btn btn-history" onclick="viewHistory(${p.id}, '${p.name}')">History</button>
-          </td>
-        </tr>
-      `;
+      tbody.innerHTML += `<tr><td>${p.name}</td><td>${p.barcode || ''}</td><td>${p.buy_price}</td><td>${p.sell_price}</td><td><strong>${p.stock}</strong></td><td><button class="btn btn-in" onclick="adjustStock(${p.id}, 'IN')">Stock In</button><button class="btn btn-out" onclick="adjustStock(${p.id}, 'OUT')">Stock Out</button><button class="btn btn-history" onclick="viewHistory(${p.id}, '${p.name}')">History</button></td></tr>`;
     });
   }
 }
@@ -471,4 +356,4 @@ async function loadProducts() {
 checkUser();
 </script>
 </body>
-  </html>
+   </html>
