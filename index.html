@@ -6,122 +6,272 @@
 <title>Shop Inventory</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-  body { background: linear-gradient(135deg, #e8f0fe 0%, #f5f7fa 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.phone { width: 100%; max-width: 380px; background: white; border-radius: 30px; padding: 30px 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
-.illustration { text-align: center; margin-bottom: 25px; }
-  h2 { font-size: 28px; font-weight: 700; color: #1a1a1a; margin-bottom: 5px; }
-.subtitle { color: #888; font-size: 14px; margin-bottom: 25px; }
-.input-group { position: relative; margin-bottom: 15px; }
-.input-group input { width: 100%; padding: 15px 15px 15px 45px; border: none; background: #f5f7fa; border-radius: 12px; font-size: 15px; outline: none; }
-.input-group.icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; font-size: 18px; }
-.input-group.toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; font-size: 18px; user-select: none; }
-.options { display: flex; justify-content: space-between; align-items: center; margin: 15px 0 20px; font-size: 14px; }
-.toggle-switch { display: flex; align-items: center; gap: 8px; color: #666; }
-.toggle-switch input[type="checkbox"] { width: 40px; height: 22px; appearance: none; background: #ddd; border-radius: 20px; position: relative; cursor: pointer; }
-.toggle-switch input:checked { background: #1e3a8a; }
-.toggle-switch input:checked::after { left: 20px; }
-.toggle-switch input::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; }
-.btn-primary { width: 100%; padding: 15px; background: #1e3a8a; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
-.btn-primary:hover { background: #1e40af; }
-.switch-link { text-align: center; margin-top: 15px; font-size: 14px; color: #666; }
-.switch-link a { color: #1e3a8a; text-decoration: none; font-weight: 600; cursor: pointer; }
-.success-msg { background: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; display: none; }
-.error-msg { color: #dc2626; font-size: 14px; margin-bottom: 10px; text-align: center; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+body {
+  background: #8a7dff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 380px;
+  background: white;
+  border-radius: 20px;
+  padding: 30px 25px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.wrapper h2 {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 25px;
+  color: #1a1a1a;
+}
+
+.tab-switch {
+  display: flex;
+  border: 1px solid #e0e0e0;
+  border-radius: 30px;
+  overflow: hidden;
+  margin-bottom: 25px;
+}
+
+.tab-switch button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #666;
+}
+
+.tab-switch button.active {
+  background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+  color: white;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #3b82f6;
+}
+
+.forgot {
+  text-align: left;
+  margin: -5px 0 15px;
+  font-size: 14px;
+}
+
+.forgot a {
+  color: #3b82f6;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.switch-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.switch-link a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.success-msg {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  display: none;
+}
+
+.error-msg {
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
 .hidden { display: none!important; }
-.app-container { width: 100%; max-width: 1100px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-.app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
-.form-grid input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-  th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
-  th { background: #f8f9fa; font-weight: 600; }
-.btn { padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+
+.app-container {
+  width: 100%;
+  max-width: 1100px;
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.form-grid input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th, td {
+  border: 1px solid #eee;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
 .btn-in { background: #10b981; color: white; }
 .btn-out { background: #f59e0b; color: white; }
 .btn-history { background: #6366f1; color: white; }
 .btn-logout { background: #ef4444; color: white; padding: 10px 18px; }
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
-.modal-content { background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 650px; border-radius: 15px; max-height: 80vh; overflow-y: auto; }
-.close { float: right; font-size: 28px; cursor: pointer; color: #888; }
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 25px;
+  width: 90%;
+  max-width: 650px;
+  border-radius: 15px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.close {
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+  color: #888;
+}
 </style>
 </head>
 <body>
 
-<div id="auth-section" class="phone">
-  <div id="register-form">
-    <div class="illustration">
-      <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-        <rect x="20" y="20" width="80" height="80" rx="15" fill="#e8f0fe"/>
-        <rect x="35" y="35" width="50" height="50" rx="8" fill="#1e3a8a"/>
-        <path d="M50 60 L55 65 L70 50" stroke="white" stroke-width="3" stroke-linecap="round"/>
-      </svg>
+<div id="auth-section" class="wrapper">
+  <!-- Login Form -->
+  <div id="login-form">
+    <h2>Login Form</h2>
+    <div class="tab-switch">
+      <button class="active" onclick="showLoginTab()">Login</button>
+      <button onclick="showSignupTab()">Signup</button>
     </div>
-    <h2>Register</h2>
-    <p class="subtitle">Please register to login.</p>
-    <div id="register-success" class="success-msg">Registration successful! Please login.</div>
-    <div id="register-error" class="error-msg"></div>
+    <div id="login-error" class="error-msg"></div>
     <div class="input-group">
-      <span class="icon">👤</span>
-      <input type="email" id="reg-email" placeholder="Email">
+      <input type="email" id="login-email" placeholder="Email Address">
     </div>
     <div class="input-group">
-      <span class="icon">📱</span>
-      <input type="text" id="reg-mobile" placeholder="Mobile Number">
+      <input type="password" id="login-password" placeholder="Password">
     </div>
-    <div class="input-group">
-      <span class="icon">🔒</span>
-      <input type="password" id="reg-password" placeholder="Password">
-      <span class="toggle-pass" onclick="togglePass('reg-password', this)">👁️</span>
+    <div class="forgot">
+      <a onclick="alert('Forgot password not implemented yet')">Forgot password?</a>
     </div>
-    <div class="input-group">
-      <span class="icon">🔒</span>
-      <input type="password" id="reg-confirm-password" placeholder="Confirm Password">
-      <span class="toggle-pass" onclick="togglePass('reg-confirm-password', this)">👁️</span>
-    </div>
-    <div class="options">
-      <label class="toggle-switch">
-        <span>Remember me</span>
-        <input type="checkbox" id="reg-remember">
-      </label>
-    </div>
-    <button class="btn-primary" onclick="signUp()">Sign Up</button>
+    <button class="btn-primary" onclick="signIn()">Login</button>
     <div class="switch-link">
-      Already have account? <a onclick="showLogin()">Sign In</a>
+      Not a member? <a onclick="showSignupTab()">Signup now</a>
     </div>
   </div>
 
-  <div id="login-form" class="hidden">
-    <div class="illustration">
-      <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-        <rect x="20" y="20" width="80" height="80" rx="15" fill="#e8f0fe"/>
-        <rect x="35" y="35" width="50" height="50" rx="8" fill="#1e3a8a"/>
-        <circle cx="60" cy="55" r="8" fill="white"/>
-        <rect x="55" y="63" width="10" height="15" fill="white"/>
-      </svg>
+  <!-- Signup Form -->
+  <div id="signup-form" class="hidden">
+    <h2>Signup Form</h2>
+    <div class="tab-switch">
+      <button onclick="showLoginTab()">Login</button>
+      <button class="active">Signup</button>
     </div>
-    <h2>Login</h2>
-    <p class="subtitle">Please Sign in to continue.</p>
-    <div id="login-error" class="error-msg"></div>
+    <div id="register-success" class="success-msg">Registration successful! Please login.</div>
+    <div id="register-error" class="error-msg"></div>
     <div class="input-group">
-      <span class="icon">👤</span>
-      <input type="email" id="login-email" placeholder="Email">
+      <input type="email" id="reg-email" placeholder="Email Address">
     </div>
     <div class="input-group">
-      <span class="icon">🔒</span>
-      <input type="password" id="login-password" placeholder="Password">
-      <span class="toggle-pass" onclick="togglePass('login-password', this)">👁️</span>
+      <input type="password" id="reg-password" placeholder="Password">
     </div>
-    <div class="options">
-      <label class="toggle-switch">
-        <span>Remember me</span>
-        <input type="checkbox" id="login-remember">
-      </label>
+    <div class="input-group">
+      <input type="password" id="reg-confirm-password" placeholder="Confirm password">
     </div>
-    <button class="btn-primary" onclick="signIn()">Sign In</button>
-    <div class="switch-link">
-      Don't have account? <a onclick="showRegister()">Sign Up</a>
-    </div>
+    <button class="btn-primary" onclick="signUp()">Signup</button>
   </div>
 </div>
 
@@ -162,27 +312,15 @@ const SUPABASE_URL = 'https://hyhbhtiuwzzrkuiowecg.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_zRWkJ-_vCtcImHv6jfsEuw_w7Xyb6FV';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function showLogin() {
-  document.getElementById('register-form').classList.add('hidden');
+function showLoginTab() {
+  document.getElementById('signup-form').classList.add('hidden');
   document.getElementById('login-form').classList.remove('hidden');
   document.getElementById('register-success').style.display = 'none';
 }
 
-function showRegister() {
+function showSignupTab() {
   document.getElementById('login-form').classList.add('hidden');
-  document.getElementById('register-form').classList.remove('hidden');
-}
-
-function togglePass(id, btn) {
-  const input = document.getElementById(id);
-  if (!input) return;
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    btn.textContent = '👁️';
-  }
+  document.getElementById('signup-form').classList.remove('hidden');
 }
 
 async function signUp() {
@@ -219,7 +357,7 @@ async function signUp() {
     document.getElementById('reg-email').value = '';
     document.getElementById('reg-password').value = '';
     document.getElementById('reg-confirm-password').value = '';
-    setTimeout(showLogin, 2000);
+    setTimeout(showLoginTab, 2000);
   }
 }
 
@@ -251,7 +389,7 @@ async function signOut() {
   await supabase.auth.signOut();
   document.getElementById('app-section').classList.add('hidden');
   document.getElementById('auth-section').classList.remove('hidden');
-  showLogin();
+  showLoginTab();
 }
 
 async function addProduct() {
@@ -356,4 +494,4 @@ async function loadProducts() {
 checkUser();
 </script>
 </body>
-         </html>
+</html>
