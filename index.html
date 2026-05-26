@@ -405,7 +405,7 @@ function showTab(tab, event){
   document.getElementById('tab-settings').style.display = tab === 'settings' ? 'block' : 'none'
 }
 async function loadProfile(){
-  const { data: { user } = await _supabase.auth.getUser()
+  const { data: { user }} = await _supabase.auth.getUser()
   if(user){
     document.getElementById('editFirstName').value = user.user_metadata.first_name || ''
     document.getElementById('editLastName').value = user.user_metadata.last_name || ''
