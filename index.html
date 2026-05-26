@@ -1,271 +1,474 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shop Inventory Scanner</title>
-<meta name="theme-color" content="#4CAF50">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Shop Inventory">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
+<title>Shop Inventory</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 15px;
-  background: #f5f5f5;
-}
-.container {
-  max-width: 800px;
-  margin: auto;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-h2, h3 {
-  text-align: center;
-  margin: 10px 0;
-}
-.section {
-  margin: 20px 0;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fafafa;
-}
-input, select, button {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  font-size: 16px;
-}
-button {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-button:hover {
-  opacity: 0.9;
-}
-.btn-red { background: #f44336; }
-.btn-orange { background: #ff9800; }
-.btn-gray { background: #9e9e9e; }
-.stats {
-  display: flex;
-  justify-content: space-around;
-  background: #e8f5e9;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: center;
-  font-size: 14px;
-}
-th {
-  background: #4CAF50;
-  color: white;
-}
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+  body {
+    background: linear-gradient(135deg, #e8f0fe 0%, #f5f7fa 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+.phone {
+    width: 100%;
+    max-width: 380px;
+    background: white;
+    border-radius: 30px;
+    padding: 30px 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  }
+
+.illustration { text-align: center; margin-bottom: 25px; }
+
+  h2 { font-size: 28px; font-weight: 700; color: #1a1a1a; margin-bottom: 5px; }
+.subtitle { color: #888; font-size: 14px; margin-bottom: 25px; }
+
+.input-group { position: relative; margin-bottom: 15px; }
+.input-group input {
+    width: 100%; padding: 15px 15px 15px 45px; border: none;
+    background: #f5f7fa; border-radius: 12px; font-size: 15px; outline: none;
+  }
+.input-group.icon {
+    position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888;
+  }
+.input-group.toggle-pass {
+    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+    cursor: pointer; color: #888;
+  }
+
+.options {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 15px 0 20px; font-size: 14px;
+  }
+.toggle-switch { display: flex; align-items: center; gap: 8px; color: #666; }
+.toggle-switch input[type="checkbox"] {
+    width: 40px; height: 22px; appearance: none; background: #ddd;
+    border-radius: 20px; position: relative; cursor: pointer;
+  }
+.toggle-switch input:checked { background: #1e3a8a; }
+.toggle-switch input:checked::after { left: 20px; }
+.toggle-switch input::after {
+    content: ''; position: absolute; width: 18px; height: 18px; background: white;
+    border-radius: 50%; top: 2px; left: 2px; transition: 0.3s;
+  }
+
+.btn-primary {
+    width: 100%; padding: 15px; background: #1e3a8a; color: white;
+    border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;
+  }
+.btn-primary:hover { background: #1e40af; }
+
+.switch-link {
+    text-align: center; margin-top: 15px; font-size: 14px; color: #666;
+  }
+.switch-link a { color: #1e3a8a; text-decoration: none; font-weight: 600; cursor: pointer; }
+
+.success-msg {
+    background: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px;
+    margin-bottom: 15px; text-align: center; display: none;
+  }
+.error-msg { color: #dc2626; font-size: 14px; margin-bottom: 10px; text-align: center; }
+
+.hidden { display: none!important; }
+
+  /* App section */
+.app-container {
+    width: 100%; max-width: 1100px; background: white; padding: 25px;
+    border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+.app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.form-grid input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+  th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+  th { background: #f8f9fa; font-weight: 600; }
+
+.btn { padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.btn-in { background: #10b981; color: white; }
+.btn-out { background: #f59e0b; color: white; }
+.btn-history { background: #6366f1; color: white; }
+.btn-logout { background: #ef4444; color: white; padding: 10px 18px; }
+
+  /* Modal */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+           background: rgba(0,0,0,0.5); z-index: 1000; }
+.modal-content {
+    background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 650px;
+    border-radius: 15px; max-height: 80vh; overflow-y: auto;
+  }
+.close { float: right; font-size: 28px; cursor: pointer; color: #888; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h2>Shop Inventory Scanner</h2>
-  
-  <div class="stats">
-    <div>Today<br><strong id="statToday">0</strong></div>
-    <div>This Month<br><strong id="statMonth">0</strong></div>
-    <div>All Time<br><strong id="statAll">0</strong></div>
+
+<!-- Auth Section -->
+<div id="auth-section" class="phone">
+
+  <!-- Register Form -->
+  <div id="register-form">
+    <div class="illustration">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+        <rect x="20" y="20" width="80" height="80" rx="15" fill="#e8f0fe"/>
+        <rect x="35" y="35" width="50" height="50" rx="8" fill="#1e3a8a"/>
+        <path d="M50 60 L55 65 L70 50" stroke="white" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h2>Register</h2>
+    <p class="subtitle">Please register to login.</p>
+
+    <div id="register-success" class="success-msg">Registration successful! Please login.</div>
+    <div id="register-error" class="error-msg"></div>
+
+    <div class="input-group">
+      <span class="icon">👤</span>
+      <input type="email" id="reg-email" placeholder="Email">
+    </div>
+    <div class="input-group">
+      <span class="icon">📱</span>
+      <input type="text" id="reg-mobile" placeholder="Mobile Number">
+    </div>
+    <div class="input-group">
+      <span class="icon">🔒</span>
+      <input type="password" id="reg-password" placeholder="Password">
+      <span class="toggle-pass" onclick="togglePass('reg-password')">👁️</span>
+    </div>
+    <div class="input-group">
+      <span class="icon">🔒</span>
+      <input type="password" id="reg-confirm-password" placeholder="Confirm Password">
+      <span class="toggle-pass" onclick="togglePass('reg-confirm-password')">👁️</span>
+    </div>
+
+    <div class="options">
+      <label class="toggle-switch">
+        <span>Remember me</span>
+        <input type="checkbox" id="reg-remember">
+      </label>
+    </div>
+
+    <button class="btn-primary" onclick="signUp()">Sign Up</button>
+    <div class="switch-link">
+      Already have account? <a onclick="showLogin()">Sign In</a>
+    </div>
   </div>
 
-  <details class="section">
-    <summary><strong>Settings & Backup</strong></summary>
-    <button onclick="exportJSON()">Export Backup</button>
-    <input type="file" id="importFile" accept=".json">
-    <button onclick="importJSON()">Import Backup</button>
-    <button class="btn-red" onclick="clearData()">Clear All Data</button>
-  </details>
+  <!-- Login Form -->
+  <div id="login-form" class="hidden">
+    <div class="illustration">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+        <rect x="20" y="20" width="80" height="80" rx="15" fill="#e8f0fe"/>
+        <rect x="35" y="35" width="50" height="50" rx="8" fill="#1e3a8a"/>
+        <circle cx="60" cy="55" r="8" fill="white"/>
+        <rect x="55" y="63" width="10" height="15" fill="white"/>
+      </svg>
+    </div>
+    <h2>Login</h2>
+    <p class="subtitle">Please Sign in to continue.</p>
 
-  <div class="section">
-    <h3>Add/Edit Product</h3>
-    <input type="text" id="barcode" placeholder="Barcode / Product ID">
-    <input type="text" id="productName" placeholder="Product Name e.g. Coca Cola 500ml">
-    <input type="number" id="buyPrice" placeholder="Buying Price">
-    <input type="number" id="sellPrice" placeholder="Selling Price">
-    <button onclick="saveProduct()">Save Product</button>
+    <div id="login-error" class="error-msg"></div>
+
+    <div class="input-group">
+      <span class="icon">👤</span>
+      <input type="email" id="login-email" placeholder="Email">
+    </div>
+    <div class="input-group">
+      <span class="icon">🔒</span>
+      <input type="password" id="login-password" placeholder="Password">
+      <span class="toggle-pass" onclick="togglePass('login-password')">👁️</span>
+    </div>
+
+    <div class="options">
+      <label class="toggle-switch">
+        <span>Remember me</span>
+        <input type="checkbox" id="login-remember">
+      </label>
+    </div>
+
+    <button class="btn-primary" onclick="signIn()">Sign In</button>
+    <div class="switch-link">
+      Don't have account? <a onclick="showRegister()">Sign Up</a>
+    </div>
+  </div>
+</div>
+
+<!-- App Section -->
+<div id="app-section" class="app-container hidden">
+  <div class="app-header">
+    <h2>Your Products</h2>
+    <button class="btn btn-logout" onclick="signOut()">Logout</button>
   </div>
 
-  <div class="section">
-    <h3>Transaction</h3>
-    <input type="text" id="transBarcode" placeholder="Barcode">
-    <select id="transType">
-      <option value="sale">Sale</option>
-      <option value="restock">Restock</option>
-    </select>
-    <input type="number" id="quantity" placeholder="Quantity">
-    <button onclick="doRestock()" style="background:#4CAF50;">Restock</button>
-    <button class="btn-red" onclick="doSale()">Sell</button>
-    <button class="btn-orange" onclick="exportExcel()">Export to Excel</button>
+  <h3>Add New Product</h3>
+  <div class="form-grid">
+    <input type="text" id="barcode" placeholder="Barcode">
+    <input type="text" id="name" placeholder="Product Name">
+    <input type="number" id="buy_price" placeholder="Buy Price">
+    <input type="number" id="sell_price" placeholder="Sell Price">
+    <input type="number" id="stock" placeholder="Initial Stock">
   </div>
+  <button class="btn-primary" style="margin-bottom:30px;" onclick="addProduct()">Add Product</button>
 
-  <div class="section">
-    <h3>Stock Dashboard</h3>
-    <button class="btn-red" onclick="filterStock('all')">All Products</button>
-    <button class="btn-gray" onclick="filterStock('low')">Low Stock</button>
-    <button class="btn-gray" onclick="filterStock('out')">Out of Stock</button>
-    <div id="stockTable"></div>
+  <h3>Products</h3>
+  <table id="products-table">
+    <thead>
+      <tr>
+        <th>Name</th><th>Barcode</th><th>Buy</th><th>Sell</th><th>Stock</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeHistory()">&times;</span>
+    <h3 id="historyTitle">Stock History</h3>
+    <table id="history-table">
+      <thead>
+        <tr><th>Date</th><th>Type</th><th>Qty</th><th>Note</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 </div>
 
 <script>
-let products = JSON.parse(localStorage.getItem('products') || '{}');
+const SUPABASE_URL = 'https://hyhbhtiuwzzrkuiowecg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_zRWkJ-_vCtcImHv6jfsEuw_w7Xyb6FV';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function saveProduct() {
-  const barcode = document.getElementById('barcode').value.trim();
-  const name = document.getElementById('productName').value.trim();
-  const buy = parseFloat(document.getElementById('buyPrice').value) || 0;
-  const sell = parseFloat(document.getElementById('sellPrice').value) || 0;
-  
-  if (!barcode ||!name) {
-    alert('Enter barcode and product name');
+function showLogin() {
+  document.getElementById('register-form').classList.add('hidden');
+  document.getElementById('login-form').classList.remove('hidden');
+  document.getElementById('register-success').style.display = 'none';
+}
+
+function showRegister() {
+  document.getElementById('login-form').classList.add('hidden');
+  document.getElementById('register-form').classList.remove('hidden');
+}
+
+function togglePass(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password'? 'text' : 'password';
+}
+
+async function signUp() {
+  const email = document.getElementById('reg-email').value;
+  const password = document.getElementById('reg-password').value;
+  const confirmPassword = document.getElementById('reg-confirm-password').value;
+  const errorDiv = document.getElementById('register-error');
+  const successDiv = document.getElementById('register-success');
+
+  errorDiv.textContent = '';
+  successDiv.style.display = 'none';
+
+  if (!email ||!password ||!confirmPassword) {
+    errorDiv.textContent = 'All fields are required';
     return;
   }
-  
-  products[barcode] = {name, buy, sell, stock: products[barcode]?.stock || 0};
-  localStorage.setItem('products', JSON.stringify(products));
-  alert('Product saved');
-  updateStats();
-  filterStock('all');
-}
 
-function doRestock() {
-  const barcode = document.getElementById('transBarcode').value.trim();
-  const qty = parseInt(document.getElementById('quantity').value) || 0;
-  if (!products[barcode]) {
-    alert('Product not found');
+  if (password!== confirmPassword) {
+    errorDiv.textContent = 'Passwords do not match';
     return;
   }
-  products[barcode].stock += qty;
-  localStorage.setItem('products', JSON.stringify(products));
-  updateStats();
-  filterStock('all');
-}
 
-function doSale() {
-  const barcode = document.getElementById('transBarcode').value.trim();
-  const qty = parseInt(document.getElementById('quantity').value) || 0;
-  if (!products[barcode]) {
-    alert('Product not found');
+  if (password.length < 6) {
+    errorDiv.textContent = 'Password must be at least 6 characters';
     return;
   }
-  if (products[barcode].stock < qty) {
-    alert('Not enough stock');
-    return;
+
+  const { error } = await supabase.auth.signUp({ email, password });
+
+  if (error) {
+    errorDiv.textContent = error.message;
+  } else {
+    successDiv.style.display = 'block';
+    document.getElementById('reg-email').value = '';
+    document.getElementById('reg-password').value = '';
+    document.getElementById('reg-confirm-password').value = '';
+    setTimeout(showLogin, 2000);
   }
-  products[barcode].stock -= qty;
-  localStorage.setItem('products', JSON.stringify(products));
-  updateStats();
-  filterStock('all');
 }
 
-function filterStock(type) {
-  let html = '<table><tr><th>Product</th><th>Stock</th><th>Buy</th><th>Sell</th><th>Profit</th></tr>';
-  for (let barcode in products) {
-    const p = products[barcode];
-    if (type === 'low' && p.stock > 5) continue;
-    if (type === 'out' && p.stock > 0) continue;
-    html += `<tr>
-      <td>${p.name}</td>
-      <td>${p.stock}</td>
-      <td>${p.buy}</td>
-      <td>${p.sell}</td>
-      <td>${(p.sell - p.buy) * p.stock}</td>
-    </tr>`;
+async function signIn() {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const errorDiv = document.getElementById('login-error');
+
+  errorDiv.textContent = '';
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    errorDiv.textContent = error.message;
+  } else {
+    checkUser();
   }
-  html += '</table>';
-  document.getElementById('stockTable').innerHTML = html;
 }
 
-function updateStats() {
-  document.getElementById('statAll').innerText = Object.keys(products).length;
-  document.getElementById('statToday').innerText = '0';
-  document.getElementById('statMonth').innerText = '0';
-}
-
-function exportExcel() {
-  let csv = 'Barcode,Name,Stock,Buy,Sell\n';
-  for (let barcode in products) {
-    const p = products[barcode];
-    csv += `${barcode},${p.name},${p.stock},${p.buy},${p.sell}\n`;
+async function checkUser() {
+  const { data: { user } = await supabase.auth.getUser();
+  if (user) {
+    document.getElementById('auth-section').classList.add('hidden');
+    document.getElementById('app-section').classList.remove('hidden');
+    loadProducts();
   }
-  const blob = new Blob([csv], {type: 'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'inventory.csv';
-  a.click();
 }
 
-function exportJSON() {
-  const data = JSON.stringify(products);
-  const blob = new Blob([data], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'backup.json';
-  a.click();
+async function signOut() {
+  await supabase.auth.signOut();
+  document.getElementById('app-section').classList.add('hidden');
+  document.getElementById('auth-section').classList.remove('hidden');
+  showLogin();
 }
 
-function importJSON() {
-  const file = document.getElementById('importFile').files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    products = JSON.parse(e.target.result);
-    localStorage.setItem('products', JSON.stringify(products));
-    updateStats();
-    filterStock('all');
-    alert('Data imported');
+async function addProduct() {
+  const { data: { user } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const product = {
+    user_id: user.id,
+    barcode: document.getElementById('barcode').value,
+    name: document.getElementById('name').value,
+    buy_price: parseFloat(document.getElementById('buy_price').value) || 0,
+    sell_price: parseFloat(document.getElementById('sell_price').value) || 0,
+    stock: parseInt(document.getElementById('stock').value) || 0
   };
-  reader.readAsText(file);
-}
 
-function clearData() {
-  if (confirm('Delete all data?')) {
-    products = {};
-    localStorage.removeItem('products');
-    updateStats();
-    filterStock('all');
+  const { data, error } = await supabase.from('products').insert([product]).select();
+  if (error) alert('Error: ' + error.message);
+  else {
+    if (product.stock > 0) {
+      await supabase.from('stock_movements').insert([{
+        user_id: user.id,
+        product_id: data[0].id,
+        type: 'IN',
+        quantity: product.stock,
+        note: 'Initial stock'
+      }]);
+    }
+    clearInputs();
+    loadProducts();
   }
 }
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+function clearInputs() {
+  document.getElementById('barcode').value = '';
+  document.getElementById('name').value = '';
+  document.getElementById('buy_price').value = '';
+  document.getElementById('sell_price').value = '';
+  document.getElementById('stock').value = '';
 }
 
-updateStats();
-filterStock('all');
+async function adjustStock(productId, type) {
+  const qty = prompt(`Enter quantity to ${type}:`);
+  if (!qty || isNaN(qty) || qty <= 0) return;
+
+  const note = prompt(`Add a note for this ${type} movement:`);
+
+  const { data: { user } = await supabase.auth.getUser();
+
+  await supabase.from('stock_movements').insert([{
+    user_id: user.id,
+    product_id: productId,
+    type: type,
+    quantity: parseInt(qty),
+    note: note || ''
+  }]);
+
+  const { data: product } = await supabase.from('products').select('stock').eq('id', productId).single();
+  let newStock = type === 'IN'? product.stock + parseInt(qty) : product.stock - parseInt(qty);
+  if (newStock < 0) newStock = 0;
+
+  await supabase.from('products').update({ stock: newStock }).eq('id', productId);
+  loadProducts();
+}
+
+async function viewHistory(productId, productName) {
+  document.getElementById('historyTitle').textContent = `History: ${productName}`;
+
+  const { data } = await supabase
+ .from('stock_movements')
+ .select('*')
+ .eq('product_id', productId)
+ .order('created_at', { ascending: false });
+
+  const tbody = document.querySelector('#history-table tbody');
+  tbody.innerHTML = '';
+
+  if (data && data.length > 0) {
+    data.forEach(m => {
+      const date = new Date(m.created_at).toLocaleString();
+      tbody.innerHTML += `
+        <tr>
+          <td>${date}</td>
+          <td style="color:${m.type==='IN'?'#10b981':'#f59e0b'}; font-weight:600;">${m.type}</td>
+          <td>${m.quantity}</td>
+          <td>${m.note || '-'}</td>
+        </tr>
+      `;
+    });
+  } else {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No history yet</td></tr>';
+  }
+
+  document.getElementById('historyModal').style.display = 'block';
+}
+
+function closeHistory() {
+  document.getElementById('historyModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+  if (event.target == document.getElementById('historyModal')) {
+    closeHistory();
+  }
+}
+
+async function loadProducts() {
+  const { data: { user } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { data } = await supabase
+.from('products')
+.select('*')
+.eq('user_id', user.id)
+.order('created_at', { ascending: false });
+
+  const tbody = document.querySelector('#products-table tbody');
+  tbody.innerHTML = '';
+  if (data) {
+    data.forEach(p => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.name}</td>
+          <td>${p.barcode || ''}</td>
+          <td>${p.buy_price}</td>
+          <td>${p.sell_price}</td>
+          <td><strong>${p.stock}</strong></td>
+          <td>
+            <button class="btn btn-in" onclick="adjustStock(${p.id}, 'IN')">Stock In</button>
+            <button class="btn btn-out" onclick="adjustStock(${p.id}, 'OUT')">Stock Out</button>
+            <button class="btn btn-history" onclick="viewHistory(${p.id}, '${p.name}')">History</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+}
+
+checkUser();
 </script>
 </body>
-</html>
-
-
-  
-
-  
+  </html>
