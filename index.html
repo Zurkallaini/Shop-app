@@ -1,4 +1,4 @@
-a<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8,14 +8,26 @@ a<!DOCTYPE html>
 <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', system-ui, sans-serif; }
   body { background:#0b1a3a; color:#fff; min-height:100vh; }
+
   #authScreen { display:flex; min-height:100vh; }
-  .left-side { flex:1; padding:60px; display:flex; flex-direction:column; justify-content:center; background:#0b1a3a; }
+  .left-side {
+    flex:1; padding:60px; display:flex; flex-direction:column; justify-content:center;
+    background:#0b1a3a;
+  }
   .left-side h1 { font-size:36px; margin-bottom:40px; font-weight:600; }
+
   .form-group { margin-bottom:20px; }
   .form-group label { display:block; font-size:13px; color:#cbd5e1; margin-bottom:8px; }
-  .form-group input,.form-group select { width:100%; background:transparent; border:none; border-bottom:2px solid #334155; padding:10px 0; color:#fff; font-size:15px; outline:none; }
+  .form-group input,.form-group select {
+    width:100%; background:transparent; border:none; border-bottom:2px solid #334155;
+    padding:10px 0; color:#fff; font-size:15px; outline:none;
+  }
   .form-group input:focus,.form-group select:focus { border-bottom-color:#3b82f6; }
-  .btn { width:100%; padding:14px; background:#3b82f6; border:none; border-radius:8px; color:#fff; font-weight:600; cursor:pointer; margin-top:20px; font-size:15px; }
+
+  .btn {
+    width:100%; padding:14px; background:#3b82f6; border:none; border-radius:8px;
+    color:#fff; font-weight:600; cursor:pointer; margin-top:20px; font-size:15px;
+  }
   .btn:hover { background:#2563eb; }
   .btn-secondary { background:#334155; }
   .btn-secondary:hover { background:#475569; }
@@ -23,12 +35,18 @@ a<!DOCTYPE html>
   .btn-success:hover { background:#15803d; }
   .btn-warning { background:#f59e0b; }
   .btn-warning:hover { background:#d97706; }
+
   .switch-text { text-align:center; margin-top:20px; color:#cbd5e1; font-size:14px; }
   .switch-text a { color:#3b82f6; cursor:pointer; text-decoration:none; }
   .forgot { text-align:right; margin-top:10px; font-size:13px; }
   .forgot a { color:#cbd5e1; cursor:pointer; text-decoration:none; }
-  .right-side { flex:1; background:#1e40af; display:flex; align-items:center; justify-content:center; }
-  .right-side img { max-width:70%; }
+
+  .right-side {
+    flex:1; background:#1e40af; display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .right-side img { max-width:70%; z-index:2; }
+  #signupForm { display:none; }
 
   #dashboardScreen { display:none; background:#0f1117; color:#e4e6eb; min-height:100vh; }
   .sidebar { width:240px; background:#1a1d24; padding:24px 16px; border-right:1px solid #2a2e37; position:fixed; height:100vh; }
@@ -42,10 +60,14 @@ a<!DOCTYPE html>
   .card-label { font-size:13px; color:#9ca3af; margin-bottom:8px; }
   .card-value { font-size:28px; font-weight:600; color:#fff; }
   .table-container { background:#1a1d24; border-radius:12px; border:1px solid #2a2e37; overflow:hidden; }
-  .dash-select, .dash-input, .dash-btn { background:#2a2e37; border:1px solid #3a3f4b; color:#fff; padding:10px 16px; border-radius:8px; outline:none; }
+  
+  .dash-input, .dash-select, .dash-btn {
+    background:#2a2e37; border:1px solid #3a3f4b; color:#fff; padding:10px 16px; border-radius:8px; outline:none;
+  }
   .dash-btn { background:#3b82f6; border:none; cursor:pointer; font-weight:500; }
   .dash-btn:hover { background:#2563eb; }
   .dash-btn:disabled { opacity:0.5; cursor:not-allowed; }
+  
   table { width:100%; border-collapse:collapse; }
   th, td { padding:16px 20px; text-align:left; border-bottom:1px solid #2a2e37; }
   th { color:#9ca3af; font-weight:500; font-size:13px; text-transform:uppercase; }
@@ -67,11 +89,17 @@ a<!DOCTYPE html>
     width:90%; max-width:400px;
   }
   .modal h3 { margin-bottom:20px; font-size:20px; }
-  .modal input { width:100%; margin-bottom:20px; }
+  .modal input, .modal select { width:100%; margin-bottom:20px; }
   .modal-actions { display:flex; gap:10px; }
 
-  @media(max-width:900px){ .right-side { display:none; } .left-side { padding:40px 30px; } }
-  @media(max-width:768px){ .sidebar { width:100%; position:relative; height:auto; } .main { margin-left:0; padding:20px; } }
+  @media(max-width:900px){
+    .right-side { display:none; }
+    .left-side { padding:40px 30px; }
+  }
+  @media(max-width:768px){
+    .sidebar { width:100%; position:relative; height:auto; }
+    .main { margin-left:0; padding:20px; }
+  }
 </style>
 </head>
 <body>
@@ -93,17 +121,57 @@ a<!DOCTYPE html>
       <div class="switch-text">Don't have an account? <a onclick="toggleForm()">Sign Up</a></div>
     </div>
 
-    <div id="signupForm" style="display:none;">
+    <div id="signupForm">
       <h1>Registration</h1>
-      <div class="form-group"><label>First Name</label><input type="text" id="firstName" placeholder="John"></div>
-      <div class="form-group"><label>Surname</label><input type="text" id="lastName" placeholder="Doe"></div>
-      <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="email@example.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="••••"></div>
-      <div class="form-group"><label>Confirm Password</label><input type="password" id="confirmPassword" placeholder="••••"></div>
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" id="firstName" placeholder="John">
+      </div>
+      <div class="form-group">
+        <label>Surname</label>
+        <input type="text" id="lastName" placeholder="Doe">
+      </div>
+      <div class="form-group">
+        <label>Other Name <span style="color:#64748b;">(optional)</span></label>
+        <input type="text" id="otherName" placeholder="Middle name">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label>Country</label>
+        <select id="country">
+          <option value="">Select Country</option>
+          <option value="Nigeria">Nigeria</option>
+          <option value="Morocco">Morocco</option>
+          <option value="USA">USA</option>
+          <option value="UK">UK</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>State</label>
+        <select id="state">
+          <option value="">Select State</option>
+          <option value="Lagos">Lagos</option>
+          <option value="Casablanca">Casablanca</option>
+          <option value="California">California</option>
+          <option value="London">London</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="••••">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPassword" placeholder="••••">
+      </div>
       <button class="btn" onclick="signup()">Sign Up</button>
       <div class="switch-text">Already have an account? <a onclick="toggleForm()">Login</a></div>
     </div>
   </div>
+
   <div class="right-side">
     <img src="https://i.ibb.co/6yQZk3b/illustration.png" alt="Illustration">
   </div>
@@ -116,7 +184,7 @@ a<!DOCTYPE html>
     <div class="nav-item" onclick="showTab('settings', event)">⚙️ Settings</div>
     <div class="nav-item" onclick="logout()">🚪 Logout</div>
   </div>
-  
+
   <div class="main">
     <div id="tab-dashboard">
       <div class="header">
@@ -125,6 +193,7 @@ a<!DOCTYPE html>
           <select id="currencySelect" class="dash-select">
             <option value="$">$ USD</option>
             <option value="€">€ EUR</option>
+            <option value="£">£ GBP</option>
             <option value="₦">₦ NGN</option>
             <option value="MAD">MAD</option>
           </select>
@@ -186,7 +255,6 @@ a<!DOCTYPE html>
   </div>
 </div>
 
-<!-- FORGOT PASSWORD MODAL -->
 <div id="forgotModal" class="modal-overlay">
   <div class="modal">
     <h3>Reset Password</h3>
@@ -198,7 +266,6 @@ a<!DOCTYPE html>
   </div>
 </div>
 
-<!-- ADD PRODUCT MODAL -->
 <div id="addModal" class="modal-overlay">
   <div class="modal">
     <h3>Add Product</h3>
@@ -213,7 +280,6 @@ a<!DOCTYPE html>
   </div>
 </div>
 
-<!-- SELL MODAL -->
 <div id="sellModal" class="modal-overlay">
   <div class="modal">
     <h3>Sell Product</h3>
@@ -227,7 +293,6 @@ a<!DOCTYPE html>
   </div>
 </div>
 
-<!-- STOCK IN MODAL -->
 <div id="stockInModal" class="modal-overlay">
   <div class="modal">
     <h3>Restock Product</h3>
@@ -245,6 +310,7 @@ const SUPABASE_URL = 'https://hyhbhtiuwzzrkuiowecg.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_zRWkJ-_vCtcImHv6jfsEuw_w7Xyb6FV'
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
 let currentCurrency = '$'
 let allProducts = []
 let currentUser = null
@@ -260,29 +326,36 @@ _supabase.auth.getSession().then(({ data: { session } }) => {
 function toggleForm(){
   const login = document.getElementById('loginForm')
   const signup = document.getElementById('signupForm')
-  login.style.display = login.style.display === 'none'? 'block' : 'none'
-  signup.style.display = signup.style.display === 'none'? 'block' : 'none'
+  login.style.display = login.style.display === 'none' ? 'block' : 'none'
+  signup.style.display = signup.style.display === 'none' ? 'block' : 'none'
 }
 
 async function signup(){
+  const firstName = document.getElementById('firstName').value.trim()
+  const lastName = document.getElementById('lastName').value.trim()
   const email = document.getElementById('signupEmail').value.trim()
   const password = document.getElementById('signupPassword').value
   const confirmPassword = document.getElementById('confirmPassword').value
-  const firstName = document.getElementById('firstName').value.trim()
-  const lastName = document.getElementById('lastName').value.trim()
-  
+
   if(!email || !password) return alert("Email and password are required")
   if(password !== confirmPassword) return alert("Passwords don't match")
 
-  const { error } = await _supabase.auth.signUp({ 
+  const { error } = await _supabase.auth.signUp({
     email, 
     password,
-    options: {
-      data: { first_name: firstName, last_name: lastName }
+    options: { 
+      data: { 
+        first_name: firstName, 
+        last_name: lastName, 
+        other_name: document.getElementById('otherName').value.trim(),
+        country: document.getElementById('country').value,
+        state: document.getElementById('state').value
+      } 
     }
   })
+
   if(error) return alert('Signup Error: ' + error.message)
-  alert('Success! Check your email to confirm, then login.')
+  alert('Success! Check your email to confirm your account, then login.')
   toggleForm()
 }
 
@@ -304,7 +377,9 @@ function closeForgotModal(){
 async function sendResetEmail(){
   const email = document.getElementById('forgotEmail').value.trim()
   if(!email) return alert('Please enter your email')
-  const { error } = await _supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin })
+  const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  })
   alert(error ? 'Error: ' + error.message : 'If an account exists, a reset link has been sent!')
   closeForgotModal()
 }
@@ -403,7 +478,8 @@ function renderProducts(data){
           </div>
         </td>
       </tr>
-    `}).join('')
+      `
+    }).join('')
   }
 }
 
@@ -421,10 +497,14 @@ async function addProduct(){
   const stock_in = parseInt(document.getElementById('addStockIn').value) || 0
   const buy_price = parseFloat(document.getElementById('addBuyPrice').value) || 0
   const sell_price = parseFloat(document.getElementById('addSellPrice').value) || 0
-  if(!name) return alert('Enter product name')
-  
-  const { error } = await _supabase.from('products').insert([{
-    name, stock_in, stock_out: 0, buy_price, sell_price, user_id: currentUser.id
+  if(!name) return alert('Enter product name') 
+   const { error } = await _supabase.from('products').insert([{
+    name, 
+    stock_in, 
+    stock_out: 0, 
+    buy_price, 
+    sell_price, 
+    user_id: currentUser.id
   }])
   
   if(error) return alert('Error: ' + error.message)
@@ -441,6 +521,7 @@ function openSellModal(product){
   document.getElementById('sellQty').value = ''
   document.getElementById('sellModal').classList.add('active')
 }
+
 function closeSellModal(){
   document.getElementById('sellModal').classList.remove('active')
   selectedProduct = null
@@ -459,5 +540,46 @@ async function confirmSell(){
   
   if(error) return alert('Error: ' + error.message)
   
-  // Log to sales_history
-  await _supabase.fr
+  await _supabase.from('sales_history').insert([{
+    product_id: selectedProduct.id,
+    product_name: selectedProduct.name,
+    quantity: qty,
+    sell_price: selectedProduct.sell_price || 0,
+    user_id: currentUser.id
+  }])
+  
+  alert(`Sold ${qty} ${selectedProduct.name}`)
+  closeSellModal()
+  loadProducts()
+}
+
+function openStockInModal(product){
+  selectedProduct = product
+  document.getElementById('stockInProductName').textContent = product.name
+  document.getElementById('stockInQty').value = ''
+  document.getElementById('stockInModal').classList.add('active')
+}
+
+function closeStockInModal(){
+  document.getElementById('stockInModal').classList.remove('active')
+  selectedProduct = null
+}
+
+async function confirmStockIn(){
+  const qty = parseInt(document.getElementById('stockInQty').value)
+  if(!qty || qty <= 0) return alert('Enter valid quantity')
+  
+  const newStockIn = (selectedProduct.stock_in || 0) + qty
+  const { error } = await _supabase.from('products')
+    .update({ stock_in: newStockIn })
+    .eq('id', selectedProduct.id)
+  
+  if(error) return alert('Error: ' + error.message)
+  alert(`Added ${qty} to ${selectedProduct.name}`)
+  closeStockInModal()
+  loadProducts()
+}
+</script>
+</body>
+</html>
+
