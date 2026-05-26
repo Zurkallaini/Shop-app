@@ -8,46 +8,22 @@
 <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', system-ui, sans-serif; }
   body { background:#0b1a3a; color:#fff; min-height:100vh; }
-
-  /* AUTH SCREEN */
   #authScreen { display:flex; min-height:100vh; }
-  
-  .left-side {
-    flex:1; padding:60px; display:flex; flex-direction:column; justify-content:center;
-    background:#0b1a3a;
-  }
+  .left-side { flex:1; padding:60px; display:flex; flex-direction:column; justify-content:center; background:#0b1a3a; }
   .left-side h1 { font-size:36px; margin-bottom:40px; font-weight:600; }
-
   .form-group { margin-bottom:20px; }
   .form-group label { display:block; font-size:13px; color:#cbd5e1; margin-bottom:8px; }
-  .form-group input,.form-group select {
-    width:100%; background:transparent; border:none; border-bottom:2px solid #334155;
-    padding:10px 0; color:#fff; font-size:15px; outline:none;
-  }
+  .form-group input,.form-group select { width:100%; background:transparent; border:none; border-bottom:2px solid #334155; padding:10px 0; color:#fff; font-size:15px; outline:none; }
   .form-group input:focus,.form-group select:focus { border-bottom-color:#3b82f6; }
-
-  .btn {
-    width:100%; padding:14px; background:#3b82f6; border:none; border-radius:8px;
-    color:#fff; font-weight:600; cursor:pointer; margin-top:20px; font-size:15px;
-  }
+  .btn { width:100%; padding:14px; background:#3b82f6; border:none; border-radius:8px; color:#fff; font-weight:600; cursor:pointer; margin-top:20px; font-size:15px; }
   .btn:hover { background:#2563eb; }
-
   .switch-text { text-align:center; margin-top:20px; color:#cbd5e1; font-size:14px; }
   .switch-text a { color:#3b82f6; cursor:pointer; text-decoration:none; }
-
   .forgot { text-align:right; margin-top:10px; font-size:13px; }
   .forgot a { color:#cbd5e1; cursor:pointer; text-decoration:none; }
-  .forgot a:hover { color:#fff; }
-
-  .right-side {
-    flex:1; background:#1e40af; display:flex; align-items:center; justify-content:center;
-    position:relative; overflow:hidden;
-  }
-  .right-side img { max-width:70%; z-index:2; }
-
+  .right-side { flex:1; background:#1e40af; display:flex; align-items:center; justify-content:center; }
+  .right-side img { max-width:70%; }
   #signupForm { display:none; }
-
-  /* DASHBOARD SCREEN */
   #dashboardScreen { display:none; background:#0f1117; color:#e4e6eb; min-height:100vh; }
   .sidebar { width:240px; background:#1a1d24; padding:24px 16px; border-right:1px solid #2a2e37; position:fixed; height:100vh; }
   .sidebar h2 { font-size:18px; margin-bottom:32px; color:#fff; }
@@ -60,35 +36,19 @@
   .card-label { font-size:13px; color:#9ca3af; margin-bottom:8px; }
   .card-value { font-size:28px; font-weight:600; color:#fff; }
   .table-container { background:#1a1d24; border-radius:12px; border:1px solid #2a2e37; overflow:hidden; }
-  
-  .dash-input, .dash-select, .dash-btn {
-    background:#2a2e37; border:1px solid #3a3f4b; color:#fff; padding:10px 16px; border-radius:8px; outline:none;
-  }
+  .dash-select, .dash-btn { background:#2a2e37; border:1px solid #3a3f4b; color:#fff; padding:10px 16px; border-radius:8px; outline:none; }
   .dash-btn { background:#3b82f6; border:none; cursor:pointer; font-weight:500; }
-  .dash-btn:hover { background:#2563eb; }
-  
   table { width:100%; border-collapse:collapse; }
   th, td { padding:16px 20px; text-align:left; border-bottom:1px solid #2a2e37; }
   th { color:#9ca3af; font-weight:500; font-size:13px; text-transform:uppercase; }
-  tr:hover { background:#22252d; }
-
-  @media(max-width:900px){
-    .right-side { display:none; }
-    .left-side { padding:40px 30px; }
-  }
-  @media(max-width:768px){
-    .sidebar { display:none; }
-    .main { margin-left:0; padding:20px; }
-  }
+  @media(max-width:900px){ .right-side { display:none; } .left-side { padding:40px 30px; } }
+  @media(max-width:768px){ .sidebar { display:none; } .main { margin-left:0; padding:20px; } }
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
 <div id="authScreen">
   <div class="left-side">
-
-    <!-- LOGIN FORM -->
     <div id="loginForm">
       <h1>Login</h1>
       <div class="form-group">
@@ -104,72 +64,44 @@
       <div class="switch-text">Don't have an account? <a onclick="toggleForm()">Sign Up</a></div>
     </div>
 
-    <!-- SIGNUP FORM -->
     <div id="signupForm">
       <h1>Registration</h1>
-      <div class="form-group">
-        <label>First Name</label>
-        <input type="text" id="firstName" placeholder="John">
-      </div>
-      <div class="form-group">
-        <label>Surname</label>
-        <input type="text" id="lastName" placeholder="Doe">
-      </div>
-      <div class="form-group">
-        <label>Other Name <span style="color:#64748b;">(optional)</span></label>
-        <input type="text" id="otherName" placeholder="Middle name">
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signupEmail" placeholder="email@example.com">
-      </div>
-      <div class="form-group">
-        <label>Country</label>
+      <div class="form-group"><label>First Name</label><input type="text" id="firstName" placeholder="John"></div>
+      <div class="form-group"><label>Surname</label><input type="text" id="lastName" placeholder="Doe"></div>
+      <div class="form-group"><label>Other Name <span style="color:#64748b;">(optional)</span></label><input type="text" id="otherName" placeholder="Middle name"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="email@example.com"></div>
+      <div class="form-group"><label>Country</label>
         <select id="country">
           <option value="">Select Country</option>
           <option value="Nigeria">Nigeria</option>
           <option value="Morocco">Morocco</option>
           <option value="USA">USA</option>
-          <option value="UK">UK</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>State</label>
+      <div class="form-group"><label>State</label>
         <select id="state">
           <option value="">Select State</option>
           <option value="Lagos">Lagos</option>
           <option value="Casablanca">Casablanca</option>
-          <option value="California">California</option>
-          <option value="London">London</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signupPassword" placeholder="••••">
-      </div>
-      <div class="form-group">
-        <label>Confirm Password</label>
-        <input type="password" id="confirmPassword" placeholder="••••">
-      </div>
+      <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="••••"></div>
+      <div class="form-group"><label>Confirm Password</label><input type="password" id="confirmPassword" placeholder="••••"></div>
       <button class="btn" onclick="signup()">Sign Up</button>
       <div class="switch-text">Already have an account? <a onclick="toggleForm()">Login</a></div>
     </div>
-
   </div>
-
   <div class="right-side">
     <img src="https://i.ibb.co/6yQZk3b/illustration.png" alt="Illustration">
   </div>
 </div>
 
-<!-- DASHBOARD SCREEN -->
 <div id="dashboardScreen">
   <div class="sidebar">
     <h2>📦 My Shop</h2>
     <div class="nav-item active">📊 Dashboard</div>
     <div class="nav-item" onclick="logout()">🚪 Logout</div>
   </div>
-
   <div class="main">
     <div class="header">
       <h1>Dashboard</h1>
@@ -177,20 +109,17 @@
         <select id="currencySelect" class="dash-select">
           <option value="$">$ USD</option>
           <option value="€">€ EUR</option>
-          <option value="£">£ GBP</option>
           <option value="₦">₦ NGN</option>
-          <option value="MAD">MAD MAD</option>
+          <option value="MAD">MAD</option>
         </select>
         <button class="dash-btn" onclick="alert('Add Product Modal')">+ Add Product</button>
       </div>
     </div>
-
     <div class="stats-grid">
       <div class="card"><div class="card-label">Total Products</div><div class="card-value" id="totalProducts">0</div></div>
       <div class="card"><div class="card-label">Stock Value</div><div class="card-value" id="stockValue">$0</div></div>
       <div class="card"><div class="card-label">Low Stock</div><div class="card-value" id="lowStock">0</div></div>
     </div>
-
     <div class="table-container">
       <table>
         <thead><tr><th>Product</th><th>Barcode</th><th>Stock</th><th>Buy Price</th><th>Sell Price</th></tr></thead>
@@ -203,12 +132,11 @@
 <script>
 const SUPABASE_URL = 'https://hyhbhtiuwzzrkuiowecg.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_zRWkJ-_vCtcImHv6jfsEuw_w7Xyb6FV'
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 let currentCurrency = '$'
 
-// Check if user is already logged in
-supabase.auth.getSession().then(({ data: { session } }) => {
+_supabase.auth.getSession().then(({ data: { session } }) => {
   if(session) showDashboard()
 })
 
@@ -220,53 +148,49 @@ function toggleForm(){
 }
 
 async function signup(){
-  const firstName = document.getElementById('firstName').value
-  const lastName = document.getElementById('lastName').value
-  const otherName = document.getElementById('otherName').value
-  const email = document.getElementById('signupEmail').value
-  const country = document.getElementById('country').value
-  const state = document.getElementById('state').value
+  const email = document.getElementById('signupEmail').value.trim()
   const password = document.getElementById('signupPassword').value
   const confirmPassword = document.getElementById('confirmPassword').value
 
   if(password !== confirmPassword) return alert("Passwords don't match")
   if(!email || !password) return alert("Email and password are required")
 
-  const { data, error } = await supabase.auth.signUp({
-    email, password,
+  const { error } = await _supabase.auth.signUp({
+    email, 
+    password,
     options: { 
       data: { 
-        first_name: firstName, 
-        last_name: lastName, 
-        other_name: otherName,
-        country: country,
-        state: state
+        first_name: document.getElementById('firstName').value.trim(),
+        last_name: document.getElementById('lastName').value.trim(),
+        other_name: document.getElementById('otherName').value.trim(),
+        country: document.getElementById('country').value,
+        state: document.getElementById('state').value
       } 
     }
   })
 
-  if(error) return alert(error.message)
-  alert('Check your email to confirm signup!')
+  if(error) return alert('Signup Error: ' + error.message)
+  alert('Success! Check your email to confirm, then login.')
+  toggleForm()
 }
 
 async function login(){
-  const email = document.getElementById('loginEmail').value
+  const email = document.getElementById('loginEmail').value.trim()
   const password = document.getElementById('loginPassword').value
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
-  if(error) return alert(error.message)
+  const { error } = await _supabase.auth.signInWithPassword({ email, password })
+  if(error) return alert('Login Error: ' + error.message)
   showDashboard()
 }
 
 async function forgotPassword(){
   const email = prompt("Enter your email to reset password:")
   if(!email) return
-  const { error } = await supabase.auth.resetPasswordForEmail(email)
-  if(error) alert(error.message)
-  else alert('Password reset link sent to your email!')
+  const { error } = await _supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin })
+  alert(error ? 'Error: ' + error.message : 'Password reset link sent!')
 }
 
 async function logout(){
-  await supabase.auth.signOut()
+  await _supabase.auth.signOut()
   document.getElementById('dashboardScreen').style.display = 'none'
   document.getElementById('authScreen').style.display = 'flex'
 }
@@ -283,11 +207,11 @@ document.getElementById('currencySelect').addEventListener('change', (e) => {
 })
 
 async function loadProducts() {
-  const { data, error } = await supabase.from('products').select('*')
+  const { data, error } = await _supabase.from('products').select('*')
   if(error) return console.error(error)
   
-  const totalValue = data.reduce((sum, p) => sum + (p.buy_price * p.stock || 0), 0)
-  const lowStockCount = data.filter(p => p.stock < 10).length
+  const totalValue = data.reduce((sum, p) => sum + ((p.buy_price || 0) * (p.stock || 0)), 0)
+  const lowStockCount = data.filter(p => (p.stock || 0) < 10).length
   
   document.getElementById('totalProducts').textContent = data.length
   document.getElementById('stockValue').textContent = currentCurrency + totalValue.toFixed(2)
@@ -305,4 +229,4 @@ async function loadProducts() {
 }
 </script>
 </body>
-  </html>
+   </html>
