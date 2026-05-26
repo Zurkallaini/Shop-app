@@ -17,32 +17,61 @@
   .form-group input:focus,.form-group select:focus { border-bottom-color:#3b82f6; }
   .btn { width:100%; padding:14px; background:#3b82f6; border:none; border-radius:8px; color:#fff; font-weight:600; cursor:pointer; margin-top:20px; font-size:15px; }
   .btn:hover { background:#2563eb; }
+  .btn-secondary { background:#334155; }
+  .btn-secondary:hover { background:#475569; }
+  .btn-success { background:#16a34a; }
+  .btn-success:hover { background:#15803d; }
+  .btn-warning { background:#f59e0b; }
+  .btn-warning:hover { background:#d97706; }
   .switch-text { text-align:center; margin-top:20px; color:#cbd5e1; font-size:14px; }
   .switch-text a { color:#3b82f6; cursor:pointer; text-decoration:none; }
   .forgot { text-align:right; margin-top:10px; font-size:13px; }
   .forgot a { color:#cbd5e1; cursor:pointer; text-decoration:none; }
   .right-side { flex:1; background:#1e40af; display:flex; align-items:center; justify-content:center; }
   .right-side img { max-width:70%; }
-  #signupForm { display:none; }
+
   #dashboardScreen { display:none; background:#0f1117; color:#e4e6eb; min-height:100vh; }
   .sidebar { width:240px; background:#1a1d24; padding:24px 16px; border-right:1px solid #2a2e37; position:fixed; height:100vh; }
   .sidebar h2 { font-size:18px; margin-bottom:32px; color:#fff; }
-  .nav-item { padding:12px 16px; margin-bottom:8px; border-radius:8px; cursor:pointer; color:#9ca3af; }
+  .nav-item { padding:12px 16px; margin-bottom:8px; border-radius:8px; cursor:pointer; color:#9ca3af; display:flex; align-items:center; gap:10px; }
   .nav-item:hover, .nav-item.active { background:#2a2e37; color:#fff; }
   .main { margin-left:240px; padding:32px; flex:1; }
-  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; }
+  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; flex-wrap:wrap; gap:12px; }
   .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:32px; }
   .card { background:#1a1d24; padding:20px; border-radius:12px; border:1px solid #2a2e37; }
   .card-label { font-size:13px; color:#9ca3af; margin-bottom:8px; }
   .card-value { font-size:28px; font-weight:600; color:#fff; }
   .table-container { background:#1a1d24; border-radius:12px; border:1px solid #2a2e37; overflow:hidden; }
-  .dash-select, .dash-btn { background:#2a2e37; border:1px solid #3a3f4b; color:#fff; padding:10px 16px; border-radius:8px; outline:none; }
+  .dash-select, .dash-input, .dash-btn { background:#2a2e37; border:1px solid #3a3f4b; color:#fff; padding:10px 16px; border-radius:8px; outline:none; }
   .dash-btn { background:#3b82f6; border:none; cursor:pointer; font-weight:500; }
+  .dash-btn:hover { background:#2563eb; }
+  .dash-btn:disabled { opacity:0.5; cursor:not-allowed; }
   table { width:100%; border-collapse:collapse; }
   th, td { padding:16px 20px; text-align:left; border-bottom:1px solid #2a2e37; }
   th { color:#9ca3af; font-weight:500; font-size:13px; text-transform:uppercase; }
+  tr:hover { background:#22252d; }
+  .search-box { display:flex; gap:10px; margin-bottom:20px; }
+  .search-box input { flex:1; }
+  .empty-state { text-align:center; padding:40px; color:#9ca3af; }
+  .action-btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .stock-in { color:#4ade80; font-weight:600; }
+  .stock-out { color:#f87171; font-weight:600; }
+
+  .modal-overlay {
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;
+  }
+  .modal-overlay.active { display:flex; }
+  .modal {
+    background:#1a1d24; padding:30px; border-radius:12px; border:1px solid #2a2e37;
+    width:90%; max-width:400px;
+  }
+  .modal h3 { margin-bottom:20px; font-size:20px; }
+  .modal input { width:100%; margin-bottom:20px; }
+  .modal-actions { display:flex; gap:10px; }
+
   @media(max-width:900px){ .right-side { display:none; } .left-side { padding:40px 30px; } }
-  @media(max-width:768px){ .sidebar { display:none; } .main { margin-left:0; padding:20px; } }
+  @media(max-width:768px){ .sidebar { width:100%; position:relative; height:auto; } .main { margin-left:0; padding:20px; } }
 </style>
 </head>
 <body>
@@ -59,38 +88,16 @@
         <label>Enter your password</label>
         <input type="password" id="loginPassword" placeholder="••••">
       </div>
-      <div class="forgot"><a onclick="forgotPassword()">Forgot Password?</a></div>
+      <div class="forgot"><a onclick="openForgotModal()">Forgot Password?</a></div>
       <button class="btn" onclick="login()">Login</button>
       <div class="switch-text">Don't have an account? <a onclick="toggleForm()">Sign Up</a></div>
     </div>
 
-    <div id="signupForm">
+    <div id="signupForm" style="display:none;">
       <h1>Registration</h1>
       <div class="form-group"><label>First Name</label><input type="text" id="firstName" placeholder="John"></div>
       <div class="form-group"><label>Surname</label><input type="text" id="lastName" placeholder="Doe"></div>
-      <div class="form-group"><label>Other Name <span style="color:#64748b;">(optional)</span></label><input type="text" id="otherName" placeholder="Middle name"></div>
       <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="email@example.com"></div>
-      <div class="form-group"><label>Country</label>
-        <select id="country">
-          <option value="">Select Country</option>
-          <option value="Nigeria">Nigeria</option>
-          <option value="Morocco">Morocco</option>
-          <option value="USA">USA</option>
-        </select>
-      </div>
-      <div class="form-group"><label>State</label>
-        <select id="state">
-          <option value="">Select State</option>
-          <option value="Lagos">Lagos</option>
-           <option value="Lagos">sokoto</option>
-           <option value="Lagos">kano</option>
-           <option value="Lagos">kaduna</option>
-           <option value="Lagos">Abuja</option>
-           <option value="Lagos">katsina</option>
-           <option value="Lagos">zamfara</option>
-          <option value="Casablanca">Casablanca</option>
-        </select>
-      </div>
       <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="••••"></div>
       <div class="form-group"><label>Confirm Password</label><input type="password" id="confirmPassword" placeholder="••••"></div>
       <button class="btn" onclick="signup()">Sign Up</button>
@@ -105,32 +112,130 @@
 <div id="dashboardScreen">
   <div class="sidebar">
     <h2>📦 My Shop</h2>
-    <div class="nav-item active">📊 Dashboard</div>
+    <div class="nav-item active" onclick="showTab('dashboard', event)">📊 Dashboard</div>
+    <div class="nav-item" onclick="showTab('settings', event)">⚙️ Settings</div>
     <div class="nav-item" onclick="logout()">🚪 Logout</div>
   </div>
+  
   <div class="main">
-    <div class="header">
-      <h1>Dashboard</h1>
-      <div style="display:flex; gap:12px; align-items:center;">
-        <select id="currencySelect" class="dash-select">
-          <option value="$">$ USD</option>
-          <option value="€">€ EUR</option>
-          <option value="₦">₦ NGN</option>
-          <option value="MAD">MAD</option>
-        </select>
-        <button class="dash-btn" onclick="alert('Add Product Modal')">+ Add Product</button>
+    <div id="tab-dashboard">
+      <div class="header">
+        <h1>Dashboard</h1>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <select id="currencySelect" class="dash-select">
+            <option value="$">$ USD</option>
+            <option value="€">€ EUR</option>
+            <option value="₦">₦ NGN</option>
+            <option value="MAD">MAD</option>
+          </select>
+          <button class="dash-btn" onclick="openAddModal()">+ Add Product</button>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" class="dash-input" placeholder="Search product name or ID..." onkeyup="searchProducts()">
+        <button class="dash-btn" onclick="searchProducts()">Search</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="card"><div class="card-label">Total Products</div><div class="card-value" id="totalProducts">0</div></div>
+        <div class="card"><div class="card-label">Stock Value</div><div class="card-value" id="stockValue">$0</div></div>
+        <div class="card"><div class="card-label">Low Stock</div><div class="card-value" id="lowStock">0</div></div>
+        <div class="card"><div class="card-label">Total Sold</div><div class="card-value" id="totalSold">0</div></div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product</th>
+              <th>Stock In</th>
+              <th>Stock Out</th>
+              <th>Available</th>
+              <th>Buy Price</th>
+              <th>Sell Price</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="productTable"></tbody>
+        </table>
+        <div id="emptyState" class="empty-state" style="display:none;">No products found</div>
       </div>
     </div>
-    <div class="stats-grid">
-      <div class="card"><div class="card-label">Total Products</div><div class="card-value" id="totalProducts">0</div></div>
-      <div class="card"><div class="card-label">Stock Value</div><div class="card-value" id="stockValue">$0</div></div>
-      <div class="card"><div class="card-label">Low Stock</div><div class="card-value" id="lowStock">0</div></div>
+
+    <div id="tab-settings" style="display:none;">
+      <h1 style="margin-bottom:30px;">Settings</h1>
+      <div class="card" style="max-width:600px;">
+        <h3 style="margin-bottom:20px;">Edit Profile</h3>
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="editFirstName" class="dash-input">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="editLastName" class="dash-input">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="editEmail" class="dash-input" disabled>
+        </div>
+        <button class="btn" onclick="updateProfile()">Save Changes</button>
+      </div>
     </div>
-    <div class="table-container">
-      <table>
-        <thead><tr><th>Product</th><th>Barcode</th><th>Stock</th><th>Buy Price</th><th>Sell Price</th></tr></thead>
-        <tbody id="productTable"></tbody>
-      </table>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div id="forgotModal" class="modal-overlay">
+  <div class="modal">
+    <h3>Reset Password</h3>
+    <input type="email" id="forgotEmail" class="dash-input" placeholder="Enter your email">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeForgotModal()">Cancel</button>
+      <button class="btn" onclick="sendResetEmail()">Send Reset Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div id="addModal" class="modal-overlay">
+  <div class="modal">
+    <h3>Add Product</h3>
+    <input type="text" id="addName" class="dash-input" placeholder="Product Name">
+    <input type="number" id="addStockIn" class="dash-input" placeholder="Stock In Quantity">
+    <input type="number" id="addBuyPrice" class="dash-input" placeholder="Buy Price">
+    <input type="number" id="addSellPrice" class="dash-input" placeholder="Sell Price">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+      <button class="btn" onclick="addProduct()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- SELL MODAL -->
+<div id="sellModal" class="modal-overlay">
+  <div class="modal">
+    <h3>Sell Product</h3>
+    <p id="sellProductName" style="margin-bottom:10px; color:#9ca3af;"></p>
+    <p id="sellAvailable" style="margin-bottom:20px; color:#9ca3af;"></p>
+    <input type="number" id="sellQty" class="dash-input" placeholder="Quantity to sell" min="1">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeSellModal()">Cancel</button>
+      <button class="btn btn-success" onclick="confirmSell()">Sell</button>
+    </div>
+  </div>
+</div>
+
+<!-- STOCK IN MODAL -->
+<div id="stockInModal" class="modal-overlay">
+  <div class="modal">
+    <h3>Restock Product</h3>
+    <p id="stockInProductName" style="margin-bottom:20px; color:#9ca3af;"></p>
+    <input type="number" id="stockInQty" class="dash-input" placeholder="Quantity to add" min="1">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeStockInModal()">Cancel</button>
+      <button class="btn btn-warning" onclick="confirmStockIn()">Add Stock</button>
     </div>
   </div>
 </div>
@@ -141,9 +246,15 @@ const SUPABASE_ANON_KEY = 'sb_publishable_zRWkJ-_vCtcImHv6jfsEuw_w7Xyb6FV'
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 let currentCurrency = '$'
+let allProducts = []
+let currentUser = null
+let selectedProduct = null
 
 _supabase.auth.getSession().then(({ data: { session } }) => {
-  if(session) showDashboard()
+  if(session) {
+    currentUser = session.user
+    showDashboard()
+  }
 })
 
 function toggleForm(){
@@ -157,24 +268,19 @@ async function signup(){
   const email = document.getElementById('signupEmail').value.trim()
   const password = document.getElementById('signupPassword').value
   const confirmPassword = document.getElementById('confirmPassword').value
-
-  if(password !== confirmPassword) return alert("Passwords don't match")
+  const firstName = document.getElementById('firstName').value.trim()
+  const lastName = document.getElementById('lastName').value.trim()
+  
   if(!email || !password) return alert("Email and password are required")
+  if(password !== confirmPassword) return alert("Passwords don't match")
 
-  const { error } = await _supabase.auth.signUp({
+  const { error } = await _supabase.auth.signUp({ 
     email, 
     password,
-    options: { 
-      data: { 
-        first_name: document.getElementById('firstName').value.trim(),
-        last_name: document.getElementById('lastName').value.trim(),
-        other_name: document.getElementById('otherName').value.trim(),
-        country: document.getElementById('country').value,
-        state: document.getElementById('state').value
-      } 
+    options: {
+      data: { first_name: firstName, last_name: lastName }
     }
   })
-
   if(error) return alert('Signup Error: ' + error.message)
   alert('Success! Check your email to confirm, then login.')
   toggleForm()
@@ -183,20 +289,29 @@ async function signup(){
 async function login(){
   const email = document.getElementById('loginEmail').value.trim()
   const password = document.getElementById('loginPassword').value
-  const { error } = await _supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await _supabase.auth.signInWithPassword({ email, password })
   if(error) return alert('Login Error: ' + error.message)
+  currentUser = data.user
   showDashboard()
 }
 
-async function forgotPassword(){
-  const email = prompt("Enter your email to reset password:")
-  if(!email) return
+function openForgotModal(){ document.getElementById('forgotModal').classList.add('active') }
+function closeForgotModal(){ 
+  document.getElementById('forgotModal').classList.remove('active')
+  document.getElementById('forgotEmail').value = ''
+}
+
+async function sendResetEmail(){
+  const email = document.getElementById('forgotEmail').value.trim()
+  if(!email) return alert('Please enter your email')
   const { error } = await _supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin })
-  alert(error ? 'Error: ' + error.message : 'Password reset link sent!')
+  alert(error ? 'Error: ' + error.message : 'If an account exists, a reset link has been sent!')
+  closeForgotModal()
 }
 
 async function logout(){
   await _supabase.auth.signOut()
+  currentUser = null
   document.getElementById('dashboardScreen').style.display = 'none'
   document.getElementById('authScreen').style.display = 'flex'
 }
@@ -204,35 +319,145 @@ async function logout(){
 function showDashboard(){
   document.getElementById('authScreen').style.display = 'none'
   document.getElementById('dashboardScreen').style.display = 'flex'
+  loadProfile()
   loadProducts()
+}
+
+function showTab(tab, event){
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  event.target.classList.add('active')
+  document.getElementById('tab-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none'
+  document.getElementById('tab-settings').style.display = tab === 'settings' ? 'block' : 'none'
+}
+
+async function loadProfile(){
+  const { data: { user } = await _supabase.auth.getUser()
+  if(user){
+    document.getElementById('editFirstName').value = user.user_metadata.first_name || ''
+    document.getElementById('editLastName').value = user.user_metadata.last_name || ''
+    document.getElementById('editEmail').value = user.email
+  }
+}
+
+async function updateProfile(){
+  const { error } = await _supabase.auth.updateUser({
+    data: {
+      first_name: document.getElementById('editFirstName').value,
+      last_name: document.getElementById('editLastName').value
+    }
+  })
+  alert(error ? 'Error: ' + error.message : 'Profile updated!')
 }
 
 document.getElementById('currencySelect').addEventListener('change', (e) => {
   currentCurrency = e.target.value
-  loadProducts()
+  renderProducts(allProducts)
 })
 
 async function loadProducts() {
-  const { data, error } = await _supabase.from('products').select('*')
+  const { data, error } = await _supabase.from('products').select('*').order('id', { ascending: false })
   if(error) return console.error(error)
-  
-  const totalValue = data.reduce((sum, p) => sum + ((p.buy_price || 0) * (p.stock || 0)), 0)
-  const lowStockCount = data.filter(p => (p.stock || 0) < 10).length
+  allProducts = data
+  renderProducts(data)
+}
+
+function searchProducts(){
+  const query = document.getElementById('searchInput').value.toLowerCase()
+  const filtered = allProducts.filter(p => 
+    (p.name && p.name.toLowerCase().includes(query)) ||
+    (p.id && p.id.toString().includes(query))
+  )
+  renderProducts(filtered)
+}
+
+function renderProducts(data){
+  const totalValue = data.reduce((sum, p) => sum + ((p.buy_price || 0) * (p.stock_in || 0)), 0)
+  const lowStockCount = data.filter(p => ((p.stock_in || 0) - (p.stock_out || 0)) < 10).length
+  const totalSold = data.reduce((sum, p) => sum + (p.stock_out || 0), 0)
   
   document.getElementById('totalProducts').textContent = data.length
   document.getElementById('stockValue').textContent = currentCurrency + totalValue.toFixed(2)
   document.getElementById('lowStock').textContent = lowStockCount
+  document.getElementById('totalSold').textContent = totalSold
   
-  document.getElementById('productTable').innerHTML = data.map(p => `
-    <tr>
-      <td>${p.name || ''}</td>
-      <td>${p.barcode || ''}</td>
-      <td>${p.stock || 0}</td>
-      <td>${currentCurrency}${p.buy_price || 0}</td>
-      <td>${currentCurrency}${p.sell_price || 0}</td>
-    </tr>
-  `).join('')
+  if(data.length === 0){
+    document.getElementById('productTable').innerHTML = ''
+    document.getElementById('emptyState').style.display = 'block'
+  } else {
+    document.getElementById('emptyState').style.display = 'none'
+    document.getElementById('productTable').innerHTML = data.map(p => {
+      const available = (p.stock_in || 0) - (p.stock_out || 0)
+      return `
+      <tr>
+        <td>#${p.id}</td>
+        <td>${p.name || ''}</td>
+        <td class="stock-in">${p.stock_in || 0}</td>
+        <td class="stock-out">${p.stock_out || 0}</td>
+        <td>${available}</td>
+        <td>${currentCurrency}${p.buy_price || 0}</td>
+        <td>${currentCurrency}${p.sell_price || 0}</td>
+        <td>
+          <div class="action-btns">
+            <button class="dash-btn btn-success" onclick='openSellModal(${JSON.stringify(p)})' ${available <= 0 ? 'disabled' : ''}>Sell</button>
+            <button class="dash-btn btn-warning" onclick='openStockInModal(${JSON.stringify(p)})'>Stock In</button>
+          </div>
+        </td>
+      </tr>
+    `}).join('')
+  }
 }
-</script>
-</body>
-   </html>
+
+function openAddModal(){ document.getElementById('addModal').classList.add('active') }
+function closeAddModal(){ 
+  document.getElementById('addModal').classList.remove('active')
+  document.getElementById('addName').value = ''
+  document.getElementById('addStockIn').value = ''
+  document.getElementById('addBuyPrice').value = ''
+  document.getElementById('addSellPrice').value = ''
+}
+
+async function addProduct(){
+  const name = document.getElementById('addName').value.trim()
+  const stock_in = parseInt(document.getElementById('addStockIn').value) || 0
+  const buy_price = parseFloat(document.getElementById('addBuyPrice').value) || 0
+  const sell_price = parseFloat(document.getElementById('addSellPrice').value) || 0
+  if(!name) return alert('Enter product name')
+  
+  const { error } = await _supabase.from('products').insert([{
+    name, stock_in, stock_out: 0, buy_price, sell_price, user_id: currentUser.id
+  }])
+  
+  if(error) return alert('Error: ' + error.message)
+  alert('Product added!')
+  closeAddModal()
+  loadProducts()
+}
+
+function openSellModal(product){
+  selectedProduct = product
+  const available = (product.stock_in || 0) - (product.stock_out || 0)
+  document.getElementById('sellProductName').textContent = product.name
+  document.getElementById('sellAvailable').textContent = `Available: ${available}`
+  document.getElementById('sellQty').value = ''
+  document.getElementById('sellModal').classList.add('active')
+}
+function closeSellModal(){
+  document.getElementById('sellModal').classList.remove('active')
+  selectedProduct = null
+}
+
+async function confirmSell(){
+  const qty = parseInt(document.getElementById('sellQty').value)
+  if(!qty || qty <= 0) return alert('Enter valid quantity')
+  const available = (selectedProduct.stock_in || 0) - (selectedProduct.stock_out || 0)
+  if(qty > available) return alert('Not enough stock!')
+  
+  const newStockOut = (selectedProduct.stock_out || 0) + qty
+  const { error } = await _supabase.from('products')
+    .update({ stock_out: newStockOut })
+    .eq('id', selectedProduct.id)
+  
+  if(error) return alert('Error: ' + error.message)
+  
+  // Log to sales_history
+  await _supabase.fr
