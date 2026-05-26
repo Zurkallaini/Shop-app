@@ -190,7 +190,7 @@ th { background: #f8f9fa; font-weight: 600; }
     <div class="tab-switch">
       <button onclick="showLoginTab()">Login</button>
       <button class="active">Signup</button>
-    </div>
+    </>
     <div id="register-success" class="success-msg">Registration successful! Please login.</div>
     <div id="register-error" class="error-msg"></div>
     <div class="input-group">
@@ -243,231 +243,189 @@ th { background: #f8f9fa; font-weight: 600; }
     </table>
   </div>
 </div>
-
-<script>
+  <script>
 const SUPABASE_URL = 'https://hyhbhtiuwzzrkuiowecg.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_zRWkJ-_vCtcImHv6jfsEuw_w7Xyb6FV';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ===== Auth Functions ===== */
+const SUPABASE_KEY = 'sb_publishable_zRWkJ-_vCtcImHv6jfsEuw_w7Xyb6FV';
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+/* ===== Auth Tabs ===== */
+
 function showLoginTab() {
   document.getElementById('signup-form').classList.add('hidden');
   document.getElementById('login-form').classList.remove('hidden');
-  document.getElementById('register-success').style.display = 'none';
-  document.getElementById('login-error').textContent = '';
 }
 
 function showSignupTab() {
   document.getElementById('login-form').classList.add('hidden');
   document.getElementById('signup-form').classList.remove('hidden');
-  document.getElementById('login-error').textContent = '';
 }
 
+/* ===== SIGN UP ===== */
+
 async function signUp() {
-  const email = document.getElementById('reg-email').value.trim();
-  const password = document.getElementById('reg-password').value;
-  const confirmPassword = document.getElementById('reg-confirm-password').value;
-  const errorDiv = document.getElementById('register-error');
-  const successDiv = document.getElementById('register-success');
+  try {
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const confirmPassword = document.getElementById('reg-confirm-password').value;
 
-  errorDiv.textContent = '';
-  successDiv.style.display = 'none';
+    const errorDiv = document.getElementById('register-error');
+    const successDiv = document.getElementById('register-success');
 
-  if (!email ||!password ||!confirmPassword) {
-    errorDiv.textContent = 'All fields are required';
-    return;
-  }
-  if (password!== confirmPassword) {
-    errorDiv.textContent = 'Passwords do not match';
-    return;
-  }
-  if (password.length < 6) {
-    errorDiv.textContent = 'Password must be at least 6 characters';
-    return;
-  }
+    errorDiv.textContent = '';
+    successDiv.style.display = 'none';
 
-  const { error } = await supabase.auth.signUp({ email, password });
-  if (error) {
-    errorDiv.textContent = error.message;
-  } else {
+    if (!email || !password || !confirmPassword) {
+      errorDiv.textContent = 'All fields are required';
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      errorDiv.textContent = 'Passwords do not match';
+      return;
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      errorDiv.textContent = error.message;
+      console.log(error);
+      return;
+    }
+
     successDiv.style.display = 'block';
+
     document.getElementById('reg-email').value = '';
     document.getElementById('reg-password').value = '';
     document.getElementById('reg-confirm-password').value = '';
-    setTimeout(showLoginTab, 2000);
+
+    setTimeout(() => {
+      showLoginTab();
+    }, 2000);
+
+  } catch (err) {
+    console.log(err);
+    alert(err.message);
   }
 }
+
+/* ===== LOGIN ===== */
 
 async function signIn() {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  const errorDiv = document.getElementById('login-error');
-  errorDiv.textContent = '';
+  try {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
-    errorDiv.textContent = error.message;
-  } else {
+    const errorDiv = document.getElementById('login-error');
+    errorDiv.textContent = '';
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      errorDiv.textContent = error.message;
+      console.log(error);
+      return;
+    }
+
+    console.log('Logged in:', data);
+
     checkUser();
+
+  } catch (err) {
+    console.log(err);
+    alert(err.message);
   }
 }
 
-async function resetPassword() {
-  const email = document.getElementById('login-email').value.trim();
-  const errorDiv = document.getElementById('login-error');
-
-  if (!email) {
-    errorDiv.textContent = 'Enter your email first, then click Forgot password';
-    return;
-  }
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.href
-  });
-
-  if (error) {
-    errorDiv.textContent = error.message;
-  } else {
-    errorDiv.style.color = '#065f46';
-    errorDiv.textContent = 'Password reset link sent! Check your email.';
-    setTimeout(() => {
-      errorDiv.style.color = '#dc2626';
-      errorDiv.textContent = '';
-    }, 5000);
-  }
-}
+/* ===== CHECK USER ===== */
 
 async function checkUser() {
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
 
-  if (user) {
-    document.getElementById('auth-section').classList.add('hidden');
-    document.getElementById('app-section').classList.remove('hidden');
-    loadProducts();
+    if (user) {
+      document.getElementById('auth-section').classList.add('hidden');
+      document.getElementById('app-section').classList.remove('hidden');
+
+      loadProducts();
+    }
+
+  } catch (err) {
+    console.log(err);
   }
 }
+
+/* ===== LOGOUT ===== */
 
 async function signOut() {
   await supabase.auth.signOut();
+
   document.getElementById('app-section').classList.add('hidden');
   document.getElementById('auth-section').classList.remove('hidden');
-  showLoginTab();
 }
 
-/* ===== Inventory Functions ===== */
-async function addProduct() {
-  const { data: { user } = await supabase.auth.getUser();
-  if (!user) return;
-
-  const product = {
-    user_id: user.id,
-    barcode: document.getElementById('barcode').value,
-    name: document.getElementById('name').value,
-    buy_price: parseFloat(document.getElementById('buy_price').value) || 0,
-    sell_price: parseFloat(document.getElementById('sell_price').value) || 0,
-    stock: parseInt(document.getElementById('stock').value) || 0
-  };
-
-  const { data, error } = await supabase.from('products').insert([product]).select();
-  if (error) {
-    alert('Error: ' + error.message);
-  } else {
-    if (product.stock > 0) {
-      await supabase.from('stock_movements').insert([{
-        user_id: user.id,
-        product_id: data[0].id,
-        type: 'IN',
-        quantity: product.stock,
-        note: 'Initial stock'
-      }]);
-    }
-    clearInputs();
-    loadProducts();
-  }
-}
-
-function clearInputs() {
-  document.getElementById('barcode').value = '';
-  document.getElementById('name').value = '';
-  document.getElementById('buy_price').value = '';
-  document.getElementById('sell_price').value = '';
-  document.getElementById('stock').value = '';
-}
-
-async function adjustStock(productId, type) {
-  const qty = prompt(`Enter quantity to ${type}:`);
-  if (!qty || isNaN(qty) || qty <= 0) return;
-  const note = prompt(`Add a note for this ${type} movement:`);
-  const { data: { user } = await supabase.auth.getUser();
-
-  await supabase.from('stock_movements').insert([{
-    user_id: user.id,
-    product_id: productId,
-    type: type,
-    quantity: parseInt(qty),
-    note: note || ''
-  }]);
-
-  const { data: product } = await supabase.from('products').select('stock').eq('id', productId).single();
-  let newStock = type === 'IN'? product.stock + parseInt(qty) : product.stock - parseInt(qty);
-  if (newStock < 0) newStock = 0;
-
-  await supabase.from('products').update({ stock: newStock }).eq('id', productId);
-  loadProducts();
-}
-
-async function viewHistory(productId, productName) {
-  document.getElementById('historyTitle').textContent = `History: ${productName}`;
-  const { data } = await supabase.from('stock_movements').select('*').eq('product_id', productId).order('created_at', { ascending: false });
-  const tbody = document.querySelector('#history-table tbody');
-  tbody.innerHTML = '';
-  if (data && data.length > 0) {
-    data.forEach(m => {
-      const date = new Date(m.created_at).toLocaleString();
-      tbody.innerHTML += `<tr><td>${date}</td><td style="color:${m.type==='IN'?'#10b981':'#f59e0b'}; font-weight:600;">${m.type}</td><td>${m.quantity}</td><td>${m.note || '-'}</td></tr>`;
-    });
-  } else {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No history yet</td></tr>';
-  }
-  document.getElementById('historyModal').style.display = 'block';
-}
-
-function closeHistory() {
-  document.getElementById('historyModal').style.display = 'none';
-}
-
-window.onclick = function(event) {
-  if (event.target == document.getElementById('historyModal')) {
-    closeHistory();
-  }
-}
+/* ===== PRODUCTS ===== */
 
 async function loadProducts() {
-  const { data: { user } = await supabase.auth.getUser();
-  if (!user) return;
-  const { data } = await supabase.from('products').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-  const tbody = document.querySelector('#products-table tbody');
-  tbody.innerHTML = '';
-  if (data) {
-    data.forEach(p => {
-      tbody.innerHTML += `<tr>
-        <td>${p.name}</td>
-        <td>${p.barcode || ''}</td>
-        <td>${p.buy_price}</td>
-        <td>${p.sell_price}</td>
-        <td><strong>${p.stock}</strong></td>
-        <td>
-          <button class="btn btn-in" onclick="adjustStock(${p.id}, 'IN')">Stock In</button>
-          <button class="btn btn-out" onclick="adjustStock(${p.id}, 'OUT')">Stock Out</button>
-          <button class="btn btn-history" onclick="viewHistory(${p.id}, '${p.name}')">History</button>
-        </td>
-      </tr>`;
+  try {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    const tbody = document.querySelector('#products-table tbody');
+
+    tbody.innerHTML = '';
+
+    data.forEach((p) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.name}</td>
+          <td>${p.barcode || ''}</td>
+          <td>${p.buy_price}</td>
+          <td>${p.sell_price}</td>
+          <td>${p.stock}</td>
+          <td>
+            <button class="btn btn-history">
+              History
+            </button>
+          </td>
+        </tr>
+      `;
     });
+
+  } catch (err) {
+    console.log(err);
   }
 }
 
-// Check if user is already logged in on page load
+/* ===== START ===== */
+
 checkUser();
+        
 </script>
 </body>
-  </html>
+</html>
