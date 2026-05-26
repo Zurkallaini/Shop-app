@@ -9,7 +9,6 @@
 const SUPABASE_URL = 'https://hybhbtiuwmzrkuioiwecg.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_zRWKJ_VctclmHw6JfsEuw_w7Xyb6FV';
 window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-console.log(window.supabase);
 </script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -127,7 +126,34 @@ th { background: #f8f9fa; font-weight: 600; }
   font-size: 14px;
   margin-right: 5px;
 }
+.btn-in { background: #10b981; color: white; }
+.btn-out { background: #f59e0b; color: white; }
+.btn-history { background: #6366f1; color: white; }
 .btn-logout { background: #ef4444; color: white; padding: 10px 18px; }
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+.modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 25px;
+  width: 90%;
+  max-width: 650px;
+  border-radius: 15px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.close {
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+  color: #888;
+}
 </style>
 </head>
 <body>
@@ -192,10 +218,22 @@ th { background: #f8f9fa; font-weight: 600; }
   <h3>Products</h3>
   <table id="products-table">
     <thead>
-      <tr><th>Name</th><th>Barcode</th><th>Buy</th><th>Sell</th><th>Stock</th></tr>
+      <tr><th>Name</th><th>Barcode</th><th>Buy</th><th>Sell</th><th>Stock</th><th>Actions</th></tr>
     </thead>
     <tbody></tbody>
   </table>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeHistory()">&times;</span>
+    <h3 id="historyTitle">Stock History</h3>
+    <table id="history-table">
+      <thead><tr><th>Date</th><th>Type</th><th>Qty</th><th>Note</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
@@ -321,10 +359,10 @@ async function loadProducts() {
   if (!user) return;
 
   const { data, error } = await window.supabase
- .from('products')
- .select('*')
- .eq('user_id', user.id)
- .order('created_at', { ascending: false });
+.from('products')
+.select('*')
+.eq('user_id', user.id)
+.order('created_at', { ascending: false });
 
   if (error) {
     console.log(error);
@@ -340,10 +378,87 @@ async function loadProducts() {
         <td>${p.barcode || ''}</td>
         <td>$${p.buy_price}</td>
         <td>$${p.sell_price}</td>
-        <td>${p.stock}</td>
+        <td id="stock-${p.id}">${p.stock}</td>
+        <td>
+          <button class="btn btn-in" onclick="updateStock('${p.id}', 'in')">+ In</button>
+          <button class="btn btn-out" onclick="updateStock('${p.id}', 'out')">- Out</button>
+          <button class="btn btn-history" onclick="viewHistory('${p.id}', '${p.name}')">History</button>
+        </td>
       </tr>
     `;
   });
+}
+
+/* ===== UPDATE STOCK ===== */
+async function updateStock(productId, type) {
+  const qty = prompt(`Enter quantity to ${type}:`);
+  if (!qty || isNaN(qty) || qty <= 0) return;
+
+  const { data: { user }} = await window.supabase.auth.getUser();
+
+  // Get current stock
+  const { data: product } = await window.supabase.from('products').select('stock').eq('id', productId).single();
+
+  let newStock = type === 'in'
+   ? product.stock + parseInt(qty)
+    : product.stock - parseInt(qty);
+
+  if (newStock < 0) return alert('Not enough stock!');
+
+  // Update product stock
+  const { error: updateError } = await window.supabase
+   .from('products')
+   .update({ stock: newStock })
+   .eq('id', productId);
+
+  if (updateError) return alert('Error: ' + updateError.message);
+
+  // Add to history
+  await window.supabase.from('stock_history').insert([{
+    product_id: productId,
+    user_id: user.id,
+    type: type,
+    qty: parseInt(qty),
+    note: type === 'in'? 'Stock added' : 'Stock removed'
+  }]);
+
+  document.getElementById(`stock-${productId}`).textContent = newStock;
+  alert(`Stock ${type} successful!`);
+}
+
+/* ===== VIEW HISTORY ===== */
+async function viewHistory(productId, productName) {
+  document.getElementById('historyTitle').textContent = `History - ${productName}`;
+  document.getElementById('historyModal').style.display = 'block';
+
+  const { data, error } = await window.supabase
+   .from('stock_history')
+   .select('*')
+   .eq('product_id', productId)
+   .order('created_at', { ascending: false });
+
+  if (error) {
+    console.log(error);
+    return;
+  }
+
+  const tbody = document.querySelector('#history-table tbody');
+  tbody.innerHTML = '';
+  data.forEach((h) => {
+    const date = new Date(h.created_at).toLocaleString();
+    tbody.innerHTML += `
+      <tr>
+        <td>${date}</td>
+        <td>${h.type}</td>
+        <td>${h.qty}</td>
+        <td>${h.note || ''}</td>
+      </tr>
+    `;
+  });
+}
+
+function closeHistory() {
+  document.getElementById('historyModal').style.display = 'none';
 }
 
 /* ===== START ===== */
@@ -351,4 +466,4 @@ checkUser();
 
 </script>
 </body>
-      </html>
+  </html>
