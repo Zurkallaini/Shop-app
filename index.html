@@ -467,12 +467,13 @@ async function logout(){
   document.getElementById('authScreen').style.display = 'flex'
 }
 
-function showDashboard(){
+function showDashboard() {
   document.getElementById('authScreen').style.display = 'none'
   document.getElementById('dashboardScreen').style.display = 'flex'
   loadProfile()
+  loadHeaderProfile()
   loadProducts()
-}
+   }
 
 function showTab(tab, event) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
@@ -526,7 +527,41 @@ function searchProducts(){
   )
   renderProducts(filtered)
 }
+// Load profile in header
+async function loadHeaderProfile() {
+  const { data: { user } = await _supabase.auth.getUser()
+  if (!user) return
 
+  const name = `${user.user_metadata.first_name || ''} ${user.user_metadata.last_name || ''}`.trim() || 'User'
+  const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`
+
+  document.getElementById('navAvatar').src = avatar
+  document.getElementById('modalAvatar').src = avatar
+  document.getElementById('modalName').textContent = name
+  document.getElementById('modalEmail').textContent = user.email
+}
+
+// Upload avatar
+document.getElementById('avatarUpload').addEventListener('change', async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+
+  const { data: { user } = await _supabase.auth.getUser()
+  const filePath = `${user.id}/${Date.now()}-${file.name}`
+
+  const { error: uploadError } = await _supabase.storage
+  .from('avatars')
+  .upload(filePath, file, { upsert: true })
+
+  if (uploadError) return alert('Upload failed: ' + uploadError.message)
+
+  const { data: { publicUrl } = _supabase.storage.from('avatars').getPublicUrl(filePath)
+
+  await _supabase.auth.updateUser({ data: { avatar_url: publicUrl } })
+  document.getElementById('navAvatar').src = publicUrl
+  document.getElementById('modalAvatar').src = publicUrl
+  alert('Profile photo updated!')
+})
 function renderProducts(data){
   const totalValue = data.reduce((sum, p) => sum + ((p.buy_price || 0) * (p.stock_in || 0)), 0)
   const lowStockCount = data.filter(p => ((p.stock_in || 0) - (p.stock_out || 0)) < 10).length
