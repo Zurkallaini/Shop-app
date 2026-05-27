@@ -505,6 +505,7 @@ async function loadProfile() {
     document.getElementById('editCountry').value = user.user_metadata.country || ''
     document.getElementById('editState').value = user.user_metadata.state || ''
     document.getElementById('editEmail').value = user.email
+     updateCurrencyByCountry(user.user_metadata.country)
   }
 }
 
@@ -528,6 +529,7 @@ async function updateProfile() {
   // Refresh header and dashboard location instantly
   loadHeaderProfile()
   loadUserLocation()
+updateCurrencyByCountry(document.getElementById('editCountry').value)
    }
 document.getElementById('currencySelect').addEventListener('change', (e) => {
   currentCurrency = e.target.value
@@ -576,6 +578,40 @@ async function loadUserLocation() {
     document.getElementById('userLocation').style.display = 'flex'
   }
        }
+   // Auto-switch currency based on country
+function updateCurrencyByCountry(country) {
+  const currencyEl = document.getElementById('currencySelect')
+  if (!currencyEl) return
+
+  const countryLower = (country || '').toLowerCase().trim()
+  
+  let currency = '$' // default USD
+
+  if (countryLower === 'nigeria') {
+    currency = '₦'
+  } else if (countryLower === 'ghana') {
+    currency = '₵'
+  } else if (countryLower === 'kenya') {
+    currency = 'KSh'
+  } else if (countryLower === 'uk' || countryLower === 'united kingdom' || countryLower === 'britain') {
+    currency = '£'
+  } else if (countryLower === 'morocco') {
+    currency = 'MAD'
+  }
+
+  currencyEl.value = currency
+  currentCurrency = currency
+  
+  if (typeof renderProducts === 'function') {
+    renderProducts(allProducts)
+  }
+}
+// Format numbers with commas: 1000 -> 1,000
+function formatPrice(amount) {
+  return Number(amount).toLocaleString('en-US')
+}
+// Upload avatar
+document.getElementById('avatarUpload').addEventListener('change', async (e) => {
 // Upload avatar
 document.getElementById('avatarUpload').addEventListener('change', async (e) => {
   const file = e.target.files[0]
@@ -621,8 +657,8 @@ function renderProducts(data){
         <td class="stock-in">${p.stock_in || 0}</td>
         <td class="stock-out">${p.stock_out || 0}</td>
         <td>${available}</td>
-        <td>${currentCurrency}${p.buy_price || 0}</td>
-        <td>${currentCurrency}${p.sell_price || 0}</td>
+        <td>${currentCurrency}${formatPrice(p.buy_price || 0)}</td>
+        <td>${currentCurrency}${formatPrice(p.sell_price || 0)}</td>
         <td>
           <div class="action-btns">
             <button class="dash-btn btn-success" onclick='openSellModal(${JSON.stringify(p)})' ${available <= 0 ? 'disabled' : ''}>Sell</button>
