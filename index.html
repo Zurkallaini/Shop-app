@@ -230,13 +230,24 @@
           <input type="text" id="editFirstName" class="dash-input">
         </div>
         <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" id="editLastName" class="dash-input">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="editEmail" class="dash-input" disabled>
-        </div>
+  <label>Last Name</label>
+  <input type="text" id="editLastName" class="dash-input">
+</div>
+
+<div class="form-group">
+  <label>Country</label>
+  <input type="text" id="editCountry" class="dash-input" placeholder="Enter your country">
+</div>
+
+<div class="form-group">
+  <label>State</label>
+  <input type="text" id="editState" class="dash-input" placeholder="Enter your state">
+</div>
+
+<div class="form-group">
+  <label>Email</label>
+  <input type="email" id="editEmail" class="dash-input" disabled>
+</div>
         <button class="btn" onclick="updateProfile()">Save Changes</button>
       </div>
     </div>
@@ -389,31 +400,38 @@ function showDashboard(){
   loadProducts()
 }
 
-function showTab(tab, event){
+function showTab(tab, event) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
   event.target.classList.add('active')
   document.getElementById('tab-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none'
   document.getElementById('tab-settings').style.display = tab === 'settings' ? 'block' : 'none'
-}
-async function loadProfile(){
-  const { data: { user }} = await _supabase.auth.getUser()
-  if(user){
+  
+  if (tab === 'settings') {
+    loadProfile()
+  }
+   }
+async function loadProfile() {
+  const { data: { user } = await _supabase.auth.getUser()
+  if (user) {
     document.getElementById('editFirstName').value = user.user_metadata.first_name || ''
     document.getElementById('editLastName').value = user.user_metadata.last_name || ''
+    document.getElementById('editCountry').value = user.user_metadata.country || ''
+    document.getElementById('editState').value = user.user_metadata.state || ''
     document.getElementById('editEmail').value = user.email
   }
 }
 
-async function updateProfile(){
+async function updateProfile() {
   const { error } = await _supabase.auth.updateUser({
     data: {
       first_name: document.getElementById('editFirstName').value,
-      last_name: document.getElementById('editLastName').value
+      last_name: document.getElementById('editLastName').value,
+      country: document.getElementById('editCountry').value,
+      state: document.getElementById('editState').value
     }
   })
   alert(error ? 'Error: ' + error.message : 'Profile updated!')
 }
-
 document.getElementById('currencySelect').addEventListener('change', (e) => {
   currentCurrency = e.target.value
   renderProducts(allProducts)
