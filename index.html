@@ -155,6 +155,14 @@
     .sidebar { width:100%; position:relative; height:auto; }
     .main { margin-left:0; padding:20px; }
   }
+   .user-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #666;
+  margin-left: 20px;
+             }
 </style>
 </head>
 <body>
@@ -232,7 +240,10 @@
     <div id="tab-dashboard">
       <div class="header">
   <h1>Dashboard</h1>
-
+<div id="userLocation" class="user-location" style="display:none;">
+  <span>📍</span>
+  <span id="userCountry"></span>, <span id="userState"></span>
+</div>
   <div class="profile-menu">
     <img id="navAvatar" src="https://ui-avatars.com/api/?name=User" class="nav-avatar">
 
@@ -472,6 +483,7 @@ function showDashboard() {
   document.getElementById('dashboardScreen').style.display = 'flex'
   loadProfile()
   loadHeaderProfile()
+  loadUserLocation()
   loadProducts()
    }
 
@@ -505,8 +517,18 @@ async function updateProfile() {
       state: document.getElementById('editState').value
     }
   })
-  alert(error ? 'Error: ' + error.message : 'Profile updated!')
-}
+  
+  if (error) {
+    alert('Error: ' + error.message)
+    return
+  }
+
+  alert('Profile updated!')
+  
+  // Refresh header and dashboard location instantly
+  loadHeaderProfile()
+  loadUserLocation()
+   }
 document.getElementById('currencySelect').addEventListener('change', (e) => {
   currentCurrency = e.target.value
   renderProducts(allProducts)
@@ -540,7 +562,20 @@ async function loadHeaderProfile() {
   document.getElementById('modalName').textContent = name
   document.getElementById('modalEmail').textContent = user.email
 }
+// Load country/state on dashboard
+async function loadUserLocation() {
+  const { data: { user } = await _supabase.auth.getUser()
+  if (!user) return
 
+  const country = user.user_metadata.country || ''
+  const state = user.user_metadata.state || ''
+
+  if (country || state) {
+    document.getElementById('userCountry').textContent = country
+    document.getElementById('userState').textContent = state
+    document.getElementById('userLocation').style.display = 'flex'
+  }
+       }
 // Upload avatar
 document.getElementById('avatarUpload').addEventListener('change', async (e) => {
   const file = e.target.files[0]
