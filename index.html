@@ -500,7 +500,7 @@ function showTab(tab, event) {
 }
 
 async function loadProfile() {
-  const { data: { user } = await _supabase.auth.getUser()
+  const { data: { user }} = await _supabase.auth.getUser()
   if (user) {
     document.getElementById('editFirstName').value = user.user_metadata.first_name || ''
     document.getElementById('editLastName').value = user.user_metadata.last_name || ''
@@ -554,7 +554,7 @@ function searchProducts(){
 }
 
 async function loadHeaderProfile() {
-  const { data: { user } = await _supabase.auth.getUser()
+  const { data: { user }} = await _supabase.auth.getUser()
   if (!user) return
 
   const name = `${user.user_metadata.first_name || ''} ${user.user_metadata.last_name || ''}`.trim() || 'User'
@@ -567,7 +567,7 @@ async function loadHeaderProfile() {
 }
 
 async function loadUserLocation() {
-  const { data: { user } = await _supabase.auth.getUser()
+  const { data: { user }} = await _supabase.auth.getUser()
   if (!user) return
 
   const country = user.user_metadata.country || ''
@@ -616,7 +616,7 @@ document.getElementById('avatarUpload').addEventListener('change', async (e) => 
   const file = e.target.files[0]
   if (!file) return
 
-  const { data: { user } = await _supabase.auth.getUser()
+  const { data: { user }} = await _supabase.auth.getUser()
   const filePath = `${user.id}/${Date.now()}-${file.name}`
 
   const { error: uploadError } = await _supabase.storage
