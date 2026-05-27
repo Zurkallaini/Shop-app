@@ -625,7 +625,7 @@ document.getElementById('avatarUpload').addEventListener('change', async (e) => 
 
   if (uploadError) return alert('Upload failed: ' + uploadError.message)
 
-  const { data: { publicUrl } = _supabase.storage.from('avatars').getPublicUrl(filePath)
+  const { data: { publicUrl }} = _supabase.storage.from('avatars').getPublicUrl(filePath)
 
   await _supabase.auth.updateUser({ data: { avatar_url: publicUrl } })
   document.getElementById('navAvatar').src = publicUrl
