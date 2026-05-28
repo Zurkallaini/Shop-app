@@ -163,6 +163,21 @@
   color: #666;
   margin-left: 20px;
   }
+ .menu-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.sidebar {
+  display: none;
+}
+.sidebar.show {
+  display: block;
+}
 </style>
 </head>
 <body>
@@ -239,7 +254,9 @@
   <div class="main">
     <div id="tab-dashboard">
       <div class="header">
-        <h1>Dashboard</h1>
+  <button id="menuBtn" class="menu-btn">⋮</button>
+  <h1>Dashboard</h1>
+  <div id="profileArea"></div>
         <div id="userLocation" class="user-location" style="display:none;">
           <span>📍</span>
           <span id="userCountry"></span>, <span id="userState"></span>
@@ -400,13 +417,22 @@ let allProducts = []
 let currentUser = null
 let selectedProduct = null
 
-_supabase.auth.getSession().then(({ data: { session } }) => {
-  if(session) {
-    currentUser = session.user
-    showDashboard()
-  }
-})
+async function checkSession() {
+    const { data: { user }} = await _supabase.auth.getUser()
+    if (user) {
+        currentUser = user
+        document.getElementById('authScreen').style.display = 'none'
+        document.getElementById('tab-dashboard').style.display = 'block'
+        loadHeaderProfile()
+        loadProducts()
+    } else {
+        document.getElementById('authScreen').style.display = 'block'
+        document.getElementById('tab-dashboard').style.display = 'none'
+    }
+}
 
+checkSession()
+   
 function toggleForm(){
   const login = document.getElementById('loginForm')
   const signup = document.getElementById('signupForm')
@@ -768,6 +794,10 @@ async function confirmStockIn(){
   closeStockInModal()
   loadProducts()
 }
+   // Toggle sidebar when 3 dots is tapped
+document.getElementById('menuBtn').addEventListener('click', () => {
+document.querySelector('.sidebar').classList.toggle('show')
+})
 </script>
 
 </body>
