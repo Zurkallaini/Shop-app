@@ -444,9 +444,15 @@ checkSession()
 function toggleForm(){
   const login = document.getElementById('loginForm')
   const signup = document.getElementById('signupForm')
-  login.style.display = login.style.display === 'none'? 'block' : 'none'
-  signup.style.display = signup.style.display === 'none'? 'block' : 'none'
-}
+  
+  if (login.style.display === 'none') {
+    login.style.display = 'block'
+    signup.style.display = 'none'
+  } else {
+    login.style.display = 'none'
+    signup.style.display = 'block'
+  }
+   }
 
 async function signup(){
   const firstName = document.getElementById('firstName').value.trim()
