@@ -243,6 +243,7 @@
     <h2>📦 My Shop</h2>
     <div class="nav-item active" onclick="showTab('dashboard', event)">📊 Dashboard</div>
     <div class="nav-item" onclick="showTab('settings', event)">⚙️ Settings</div>
+     <div class="nav-item" onclick="showTab('contact', event)">💬 Contact & Feedback</div>
     <div class="nav-item" onclick="logout()">🚪 Logout</div>
   </div>
 
@@ -350,6 +351,41 @@
     </div>
   </div>
 </div>
+   <div id="tab-contact" style="display:none;">
+  <h1 style="margin-bottom:30px;">Contact & Feedback</h1>
+  
+  <div class="card" style="max-width:600px; margin-bottom:20px;">
+    <h3 style="margin-bottom:15px;">Reach Me</h3>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <a href="https://wa.me/+2347046949987" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none;">
+        💚 WhatsApp: Chat with me
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=100085230195633" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none; background:#1877f2;">
+        📘 Facebook: @Zurkallani
+      </a>
+      <a href="https://x.com/Zurkallain85941" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none; background:#1da1f2;">
+        🐦 Twitter/X: @Zurkallain85941
+      </a>
+    </div>
+    <p style="margin-top:15px; font-size:13px; color:#9ca3af;">
+    <!-- Replace the links and numbers with yours. -->
+    </p>
+  </div>
+
+  <div class="card" style="max-width:600px;">
+    <h3 style="margin-bottom:15px;">Send Feedback / Report a Problem</h3>
+    <div class="form-group">
+      <label>Subject</label>
+      <input type="text" id="feedbackSubject" class="dash-input" placeholder="What’s the issue?">
+    </div>
+    <div class="form-group">
+      <label>Message</label>
+      <textarea id="feedbackMessage" class="dash-input" rows="5" placeholder="Describe the problem in detail..."></textarea>
+    </div>
+    <button class="btn" onclick="submitFeedback()">Send Feedback</button>
+    <p id="feedbackStatus" style="margin-top:10px; font-size:14px;"></p>
+  </div>
+   </div>
 
 <div id="forgotModal" class="modal-overlay">
   <div class="modal">
@@ -530,13 +566,13 @@ function showDashboard() {
 
 function showTab(tab, event) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
-  event.target.classList.add('active')
-  document.getElementById('tab-dashboard').style.display = tab === 'dashboard'? 'block' : 'none'
-  document.getElementById('tab-settings').style.display = tab === 'settings'? 'block' : 'none'
+  if (event && event.target) event.target.classList.add('active')
+  
+  document.getElementById('tab-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none'
+  document.getElementById('tab-settings').style.display = tab === 'settings' ? 'block' : 'none'
+  document.getElementById('tab-contact').style.display = tab === 'contact' ? 'block' : 'none'
 
-  if (tab === 'settings') {
-    loadProfile()
-  }
+  if (tab === 'settings') loadProfile()
 }
 
 async function loadProfile() {
@@ -811,7 +847,43 @@ async function confirmStockIn(){
   closeStockInModal()
   loadProducts()
 }
+async function submitFeedback() {
+  const subject = document.getElementById('feedbackSubject').value.trim()
+  const message = document.getElementById('feedbackMessage').value.trim()
+  const statusEl = document.getElementById('feedbackStatus')
+  
+  if (!subject || !message) {
+    statusEl.textContent = 'Please fill both fields'
+    statusEl.style.color = '#f87171'
+    return
+  }
+  
+  if (!currentUser) {
+    statusEl.textContent = 'You must be logged in'
+    statusEl.style.color = '#f87171'
+    return
+  }
 
+  const { error } = await _supabase.from('feedback').insert([{
+    user_id: currentUser.id,
+    email: currentUser.email,
+    subject,
+    message,
+    status: 'open'
+  }])
+
+  if (error) {
+    statusEl.textContent = 'Error: ' + error.message
+    statusEl.style.color = '#f87171'
+  } else {
+    statusEl.textContent = 'Thanks! Your feedback was sent.'
+    statusEl.style.color = '#4ade80'
+    document.getElementById('feedbackSubject').value = ''
+    document.getElementById('feedbackMessage').value = ''
+  }
+}
+
+window.submitFeedback = submitFeedback
 // Make functions global so onclick works
 window.openAddModal = openAddModal
 window.closeAddModal = closeAddModal
@@ -832,6 +904,7 @@ window.signup = signup
 window.openForgotModal = openForgotModal
 window.closeForgotModal = closeForgotModal
 window.sendResetEmail = sendResetEmail
+window.submitFeedback = submitFeedback
 
 document.getElementById('menuBtn').addEventListener('click', () => {
   document.querySelector('.sidebar').classList.toggle('show')
