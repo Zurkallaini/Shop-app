@@ -500,19 +500,18 @@ async function checkSession() {
 }
 
 checkSession()
-function toggleForm(){
+function toggleForm() {
   const login = document.getElementById('loginForm')
   const signup = document.getElementById('signupForm')
 
   if(login.style.display === 'none') {
-    login.style.display = 'block';
-    signup.style.display = 'none';
+    login.style.display = 'block'
+    signup.style.display = 'none'
   } else {
-    login.style.display = 'none';
-    signup.style.display = 'block';
+    login.style.display = 'none'
+    signup.style.display = 'block'
   }
    }
-
 async function signup(){
   const firstName = document.getElementById('firstName').value.trim()
   const lastName = document.getElementById('lastName').value.trim()
@@ -1143,7 +1142,6 @@ window.closeForgotModal = closeForgotModal
 window.sendResetEmail = sendResetEmail
 window.submitFeedback = submitFeedback
 window.sendReply = sendReply
-window.updateStatus = updateStatus
 window.updateFeedbackStatus = updateFeedbackStatus
 window.replyToFeedback = replyToFeedback
 window.loadFeedback = loadFeedback
@@ -1167,7 +1165,7 @@ document.getElementById('logoutBtn').addEventListener('click', logout)
 // Close dropdown when clicking outside
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.profile-menu')) {
-    document.getElementById('profileDropdown').classList.add('hidden')
+    document.getElementById('profileDropdown').classList.remove('show')
   }
 })
 </script>
