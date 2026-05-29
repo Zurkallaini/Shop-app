@@ -599,8 +599,8 @@ function showTab(tab, event) {
 
   if (tab === 'settings') loadProfile()
   if (tab === 'contact') loadUserFeedback()
-  if (tab === 'admin') loadAdminFeedback()
-}
+  if (tab === 'admin') { loadFeedback()
+   }
 
 async function checkSession() {
   const { data: { user } = await _supabase.auth.getUser()
@@ -757,7 +757,7 @@ async function sendReply(feedbackId) {
   }
 }
 
-async function updateStatus(id, status) {
+async function updateFeedbackStatus(id, status) {
   await _supabase.from('feedback').update({ status }).eq('id', id)
   loadAdminFeedback()
 }
