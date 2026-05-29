@@ -1069,6 +1069,58 @@ async function submitFeedback() {
     document.getElementById('feedbackMessage').value = ''
   }
 }
+   async function loadFeedback() {
+  const { data, error } = await _supabase
+    .from('feedback')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error(error)
+    return
+  }
+
+  const tbody = document.getElementById('feedbackTable')
+  const empty = document.getElementById('feedbackEmpty')
+  
+  if (!data || data.length === 0) {
+    tbody.innerHTML = ''
+    empty.style.display = 'block'
+    return
+  }
+
+  empty.style.display = 'none'
+  tbody.innerHTML = data.map(f => `
+    <tr>
+      <td>${new Date(f.created_at).toLocaleString()}</td>
+      <td>${f.email}</td>
+      <td>${f.subject}</td>
+      <td style="max-width:250px; white-space:pre-wrap;">${f.message}</td>
+      <td class="${f.status === 'open' ? 'stock-out' : 'stock-in'}">${f.status}</td>
+      <td>
+        <select onchange="updateFeedbackStatus(${f.id}, this.value)" class="dash-select" style="margin-bottom:5px;">
+          <option value="open" ${f.status==='open'?'selected':''}>Open</option>
+          <option value="replied" ${f.status==='replied'?'selected':''}>Replied</option>
+          <option value="resolved" ${f.status==='resolved'?'selected':''}>Resolved</option>
+        </select>
+        <button class="dash-btn" onclick="replyToFeedback('${f.email}', '${f.subject.replace(/'/g, "\\'")}')">Reply</button>
+      </td>
+    </tr>
+  `).join('')
+}
+
+async function updateFeedbackStatus(id, status) {
+  const { error } = await _supabase.from('feedback').update({ status }).eq('id', id)
+  if (error) alert('Error: ' + error.message)
+}
+
+function replyToFeedback(email, subject) {
+  const reply = prompt(`Reply to ${email}\nRe: ${subject}\n\nType your reply:`)
+  if (reply) {
+    window.open(`mailto:${email}?subject=Re: ${encodeURIComponent(subject)}&body=${encodeURIComponent(reply)}`)
+    alert('Opening your email app. After sending, set status to "Replied".')
+  }
+}
 
 // Make functions global so onclick works
 window.openAddModal = openAddModal
@@ -1093,6 +1145,10 @@ window.sendResetEmail = sendResetEmail
 window.submitFeedback = submitFeedback
 window.sendReply = sendReply
 window.updateStatus = updateStatus
+window.updateFeedbackStatus = updateFeedbackStatus
+window.replyToFeedback = replyToFeedback
+window.loadFeedback = loadFeedback
+   
 
 document.getElementById('menuBtn').addEventListener('click', () => {
   document.querySelector('.sidebar').classList.toggle('show')
