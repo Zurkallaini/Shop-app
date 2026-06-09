@@ -6,461 +6,539 @@
 <title>My Shop Inventory</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', system-ui, sans-serif; }
-  body { background:#0b1a3a; color:#fff; min-height:100vh; }
-
-  #authScreen { display:flex; min-height:100vh; }
-  #dashboardScreen { display:none; background:#0f1117; color:#e4e6eb; min-height:100vh; }
-  #signupForm { display:none; }
-
-.left-side {
-    flex:1; padding:60px; display:flex; flex-direction:column; justify-content:center;
-    background:#0b1a3a;
-  }
-.left-side h1 { font-size:36px; margin-bottom:40px; font-weight:600; }
-
-.form-group { margin-bottom:20px; }
-.form-group label { display:block; font-size:13px; color:#cbd5e1; margin-bottom:8px; }
-.form-group input,.form-group select {
-    width:100%; background:transparent; border:none; border-bottom:2px solid #334155;
-    padding:10px 0; color:#fff; font-size:15px; outline:none;
-  }
-.form-group input:focus,.form-group select:focus { border-bottom-color:#3b82f6; }
-
-.btn {
-    width:100%; padding:14px; background:#3b82f6; border:none; border-radius:8px;
-    color:#fff; font-weight:600; cursor:pointer; margin-top:20px; font-size:15px;
-  }
-.btn:hover { background:#2563eb; }
-.btn-secondary { background:#334155; }
-.btn-secondary:hover { background:#475569; }
-.btn-success { background:#16a34a; }
-.btn-success:hover { background:#15803d; }
-.btn-warning { background:#f59e0b; }
-.btn-warning:hover { background:#d97706; }
-
-.switch-text { text-align:center; margin-top:20px; color:#cbd5e1; font-size:14px; }
-.switch-text a { color:#3b82f6; cursor:pointer; text-decoration:none; }
-.forgot { text-align:right; margin-top:10px; font-size:13px; }
-.forgot a { color:#cbd5e1; cursor:pointer; text-decoration:none; }
-
-.right-side {
-    flex:1; background:#1e40af; display:flex; align-items:center; justify-content:center;
-    position:relative; overflow:hidden;
-  }
-.right-side img { max-width:70%; z-index:2; }
-
-.sidebar { width:240px; background:#1a1d24; padding:24px 16px; border-right:1px solid #2a2e37; position:fixed; height:100vh; }
-.sidebar h2 { font-size:18px; margin-bottom:32px; color:#fff; }
-.nav-item { padding:12px 16px; margin-bottom:8px; border-radius:8px; cursor:pointer; color:#9ca3af; display:flex; align-items:center; gap:10px; }
-.nav-item:hover,.nav-item.active { background:#2a2e37; color:#fff; }
-.main { margin-left:240px; padding:32px; flex:1; }
-.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; flex-wrap:wrap; gap:12px; }
-.stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:32px; }
-.card { background:#1a1d24; padding:20px; border-radius:12px; border:1px solid #2a2e37; }
-.card-label { font-size:13px; color:#9ca3af; margin-bottom:8px; }
-.card-value { font-size:28px; font-weight:600; color:#fff; }
-.table-container { background:#1a1d24; border-radius:12px; border:1px solid #2a2e37; overflow:hidden; }
-
-.dash-input,.dash-select,.dash-btn {
-    background:#2a2e37; border:1px solid #3a3f4b; color:#fff; padding:10px 16px; border-radius:8px; outline:none;
-  }
-.dash-btn { background:#3b82f6; border:none; cursor:pointer; font-weight:500; }
-.dash-btn:hover { background:#2563eb; }
-.dash-btn:disabled { opacity:0.5; cursor:not-allowed; }
-
-.nav-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  object-fit: cover;
-  border: 2px solid #2a2e37;
+* { 
+  margin:0; 
+  padding:0; 
+  box-sizing:border-box; 
+  font-family: 'Inter', system-ui, sans-serif; 
+}
+body { 
+  background:#0b1a3a; 
+  color:#fff; 
+  min-height:100vh; 
 }
 
-.profile-menu { position: relative; }
+#authScreen { 
+  display:flex; 
+  min-height:100vh; 
+}
+#dashboardScreen { 
+  display:none; 
+  background:#0f1117; 
+  color:#e4e6eb; 
+  min-height:100vh; 
+}
+#signupForm { 
+  display:none; 
+}
 
-.profile-dropdown {
-  position: absolute;
-  right: 0;
-  top: 50px;
-  width: 240px;
+.left-side { 
+  flex:1; 
+  padding:60px; 
+  display:flex; 
+  flex-direction:column; 
+  justify-content:center; 
+  background:#0b1a3a; 
+}
+.left-side h1 { 
+  font-size:36px; 
+  margin-bottom:40px; 
+  font-weight:600; 
+}
+.form-group { 
+  margin-bottom:20px; 
+}
+.form-group label { 
+  display:block; 
+  font-size:13px; 
+  color:#cbd5e1; 
+  margin-bottom:8px; 
+}
+.form-group input, .form-group select {
+  width: 100% !important; 
+  box-sizing: border-box !important;
+  background: #1a1a2e !important; 
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important; 
+  padding: 14px 12px !important;
+  color: #fff !important; 
+  font-size: 16px !important; 
+  outline: none !important;
+}
+.form-group input:focus,.form-group select:focus { 
+  border:1px solid #3b82f6; 
+}
+.btn { 
+  width:100%; 
+  padding:14px; 
+  background:#3b82f6; 
+  border:none; 
+  border-radius:8px; 
+  color:#fff; 
+  font-weight:600; 
+  cursor:pointer; 
+  margin-top:20px; 
+  font-size:15px; 
+}
+.btn:hover { 
+  background:#2563eb; 
+}
+.btn-secondary { 
+  background:#334155; 
+}
+.btn-secondary:hover { 
+  background:#475569; 
+}
+.btn-success { 
+  background:#16a34a; 
+}
+.btn-success:hover { 
+  background:#15803d; 
+}
+.btn-warning { 
+  background:#f59e0b; 
+}
+.btn-warning:hover { 
+  background:#d97706; 
+}
+.switch-text { 
+  text-align:center; 
+  margin-top:20px; 
+  color:#cbd5e1; 
+  font-size:14px; 
+}
+.switch-text a { 
+  color:#3b82f6; 
+  cursor:pointer; 
+  text-decoration:none; 
+}
+.forgot { 
+  text-align:right; 
+  margin-top:10px; 
+  font-size:13px; 
+}
+.forgot a { 
+  color:#cbd5e1; 
+  cursor:pointer; 
+  text-decoration:none; 
+}
+.right-side { 
+  flex:1; 
+  background:#1e40af; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  position:relative; 
+  overflow:hidden; 
+}
+.right-side img { 
+  max-width:70%; 
+  z-index:2; 
+}
+
+/* SIDEBAR - FIXED */
+.sidebar {
+  position: fixed;
+  left: -280px;
+  top: 0;
+  width: 280px;
+  height: 100vh;
   background: #1a1d24;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  padding: 15px;
-  z-index: 100;
-  border: 1px solid #2a2e37;
+  border-right: 1px solid #2a2e37;
+  z-index: 1003;
+  transition: left 0.3s ease;
+  padding-top: 85px;
+  overflow-y: auto;
 }
 
-.profile-dropdown.hidden { display: none; }
-
-.profile-info { text-align: center; margin-bottom: 12px; }
-.profile-info img {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 8px;
+.sidebar.open {
+  left: 0 !important;
 }
-.profile-info p { margin: 4px 0; font-size: 14px; color: #e4e6eb; }
 
-.upload-btn, #openSettingsBtn, #logoutBtn {
-  width: 100%;
-  padding: 8px;
-  margin-top: 8px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
+.sidebar h2 { 
+  font-size:18px; 
+  margin-bottom:32px; 
+  color:#fff; 
+  padding: 0 20px;
 }
-.upload-btn { background: #2a2e37; color: #e4e6eb; }
-#openSettingsBtn { background: #4f46e5; color: #fff; }
-#logoutBtn { background: #ef4444; color: #fff; }
+.nav-item { 
+  padding:12px 20px; 
+  margin-bottom:4px; 
+  cursor:pointer; 
+  color:#9ca3af; 
+  display:flex; 
+  align-items:center; 
+  gap:10px; 
+  transition: background 0.2s;
+}
+.nav-item:hover,.nav-item.active { 
+  background:#2a2e37; 
+  color:#fff; 
+}
 
-  table { width:100%; border-collapse:collapse; }
-  th, td { padding:16px 20px; text-align:left; border-bottom:1px solid #2a2e37; }
-  th { color:#9ca3af; font-weight:500; font-size:13px; text-transform:uppercase; }
-  tr:hover { background:#22252d; }
-.search-box { display:flex; gap:10px; margin-bottom:20px; }
-.search-box input { flex:1; }
-.empty-state { text-align:center; padding:40px; color:#9ca3af; }
-.action-btns { display:flex; gap:8px; flex-wrap:wrap; }
-.stock-in { color:#4ade80; font-weight:600; }
-.stock-out { color:#f87171; font-weight:600; }
+.main { 
+  margin-left:0; 
+  padding:90px 50px 50px 50px; 
+  width:100%; 
+  transition:margin-left 0.3s; 
+}
+.stats-grid { 
+  display:grid; 
+  grid-template-columns:repeat(4, 1fr); 
+  gap:25px; 
+  margin-bottom:32px; 
+  width:100%; 
+}
+.card { 
+  background:#1a1d24; 
+  padding:20px; 
+  border-radius:12px; 
+  border:1px solid #2a2e37; 
+}
+.card-label { 
+  font-size:13px; 
+  color:#9ca3af; 
+  margin-bottom:8px; 
+}
+.card-value { 
+  font-size:28px; 
+  font-weight:600; 
+  color:#fff; 
+}
+.table-container { 
+  background:#1a1d24; 
+  border-radius:12px; 
+  border:1px solid #2a2e37; 
+  overflow-x:auto; 
+}
+.dash-input,.dash-select,.dash-btn { 
+  background:#2a2e37; 
+  border:1px solid #3a3f4b; 
+  color:#fff; 
+  padding:10px 16px; 
+  border-radius:8px; 
+  outline:none; 
+}
+.dash-btn { 
+  background:#3b82f6; 
+  border:none; 
+  cursor:pointer; 
+  font-weight:500; 
+}
+.dash-btn:hover { 
+  background:#2563eb; 
+}
+.nav-avatar { 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  cursor: pointer; 
+  object-fit: cover; 
+  border: 2px solid #2a2e37; 
+}
+.profile-menu { 
+  position:relative; 
+}
+.profile-dropdown { 
+  position: absolute; 
+  right: 0; 
+  top: 50px; 
+  width: 240px; 
+  background: #1a1d24; 
+  border-radius: 12px; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+  padding: 15px; 
+  z-index: 100; 
+  border: 1px solid #2a2e37; 
+}
+.profile-dropdown.hidden { 
+  display: none; 
+}
+table { 
+  width:100%; 
+  border-collapse:collapse; 
+  min-width:900px; 
+}
+th, td { 
+  padding:16px 20px; 
+  text-align:left; 
+  border-bottom:1px solid #2a2e37; 
+}
+th { 
+  color:#9ca3af; 
+  font-weight:500; 
+  font-size:13px; 
+  text-transform:uppercase; 
+}
+.modal-overlay { 
+  display:none; 
+  position:fixed; 
+  top:0; 
+  left:0; 
+  width:100%; 
+  height:100%; 
+  background:rgba(0,0,0,0.7); 
+  z-index:1000; 
+  align-items:center; 
+  justify-content:center; 
+}
+.modal-overlay.active { 
+  display:flex; 
+}
+.modal { 
+  background:#1a1d24; 
+  padding:30px; 
+  border-radius:12px; 
+  border:1px solid #2a2e37; 
+  width:90%; 
+  max-width:400px; 
+}
 
-.modal-overlay {
-    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;
-  }
-.modal-overlay.active { display:flex; }
-.modal {
-    background:#1a1d24; padding:30px; border-radius:12px; border:1px solid #2a2e37;
-    width:90%; max-width:400px;
-  }
-.modal h3 { margin-bottom:20px; font-size:20px; }
-.modal input,.modal select { width:100%; margin-bottom:20px; }
-.modal-actions { display:flex; gap:10px; }
+.search-box { 
+  display:flex; 
+  gap:10px; 
+  margin-bottom:20px; 
+}
+.empty-state { 
+  text-align:center; 
+  padding:40px; 
+  color:#9ca3af; 
+}
+.user-location { 
+  display:flex; 
+  gap:6px; 
+  align-items:center; 
+  background:#2a2e37; 
+  padding:8px 12px; 
+  border-radius:8px; 
+  font-size:14px; 
+}
 
-  @media(max-width:900px){
-.right-side { display:none; }
-.left-side { padding:40px 30px; }
-  }
-  @media(max-width:768px){
-.sidebar { width:100%; position:relative; height:auto; }
-.main { margin-left:0; padding:20px; }
-  }
-.user-location {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  color: #666;
-  margin-left: 20px;
-  }
+/* OVERLAY - FIXED TO MATCH JS */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: none;
+}
+
+.overlay.open {
+  display: block;
+}
+
+/* TOP HEADER - FIXED */
+.top-header { 
+  position: fixed; 
+  top:0; 
+  left:0;
+  width:100%; 
+  height:65px; 
+  background:#1a1d24;
+  border-bottom: 1px solid #2a2e37;
+  display:flex; 
+  align-items:center; 
+  padding:0 20px; 
+  z-index:1002; 
+}
+.header-right { 
+  display:flex; 
+  gap:12px; 
+  align-items:center; 
+  margin-left: auto;
+}
 .menu-btn {
-  font-size: 24px;
   background: none;
   border: none;
   color: white;
+  font-size: 28px;
   cursor: pointer;
-  padding: 8px;
+  padding: 5px 10px;
+  margin-right: 10px;
 }
 
-.sidebar {
-  display: none;
+@media(max-width:1024px){
+  .main { 
+    margin-left:0 !important; 
+    width:100% !important; 
+    padding:90px 20px 20px 20px !important; 
+  }
+  .sidebar { 
+    left:-280px !important; 
+    position:fixed !important; 
+  }
+  .sidebar.open { 
+    left:0 !important; 
+  }
+  .stats-grid { 
+    grid-template-columns:repeat(2, 1fr) !important; 
+  }
 }
-.sidebar.show {
-  display: block;
+@media(max-width:600px){
+  .stats-grid { 
+    grid-template-columns:1fr !important; 
+  }
 }
 </style>
 </head>
 <body>
-
-<div id="authScreen">
-  <div class="left-side">
-    <div id="loginForm">
-      <h1>Login</h1>
-      <div class="form-group">
-        <label>Enter your email</label>
-        <input type="email" id="loginEmail" placeholder="email@example.com">
+  <!-- 1. SIDEBAR - Must be first, direct child of body -->
+  <div class="sidebar" id="sidebar">
+    <div style="padding:20px; border-bottom:1px solid #2a2e37; display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+      <div style="width:40px; height:40px; background:linear-gradient(135deg, #3b82f6, #2563eb); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; font-size:20px; box-shadow:0 4px 12px rgba(59, 130, 246, 0.3);">
+        MS
       </div>
-      <div class="form-group">
-        <label>Enter your password</label>
-        <input type="password" id="loginPassword" placeholder="••••">
+      <div>
+        <div style="font-size:16px; font-weight:700;">My Shop</div>
+        <div style="font-size:11px; color:#9ca3af;">Inventory</div>
       </div>
-      <div class="forgot"><a onclick="openForgotModal()">Forgot Password?</a></div>
-      <button class="btn" onclick="login()">Login</button>
-      <div class="switch-text">Don't have an account? <a onclick="toggleForm()">Sign Up</a></div>
     </div>
-
-    <div id="signupForm">
-      <h1>Registration</h1>
-      <div class="form-group">
-        <label>First Name</label>
-        <input type="text" id="firstName" placeholder="John">
-      </div>
-      <div class="form-group">
-        <label>Surname</label>
-        <input type="text" id="lastName" placeholder="Doe">
-      </div>
-      <div class="form-group">
-        <label>Other Name <span style="color:#64748b;">(optional)</span></label>
-        <input type="text" id="otherName" placeholder="Middle name">
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signupEmail" placeholder="email@example.com">
-      </div>
-      <div class="form-group">
-        <label>Country</label>
-        <input type="text" id="country" placeholder="Enter your country">
-      </div>
-      <div class="form-group">
-        <label>State</label>
-        <input type="text" id="state" placeholder="Enter your state">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signupPassword" placeholder="••••">
-      </div>
-      <div class="form-group">
-        <label>Confirm Password</label>
-        <input type="password" id="confirmPassword" placeholder="••••">
-      </div>
-      <button class="btn" onclick="signup()">Sign Up</button>
-      <div class="switch-text">Already have an account? <a onclick="toggleForm()">Login</a></div>
-    </div>
-  </div>
-
-  <div class="right-side">
-    <img src="https://via.placeholder.com/400x400.png?text=Inventory" alt="Inventory">
-  </div>
-</div>
-
-<div id="dashboardScreen">
-  <div class="sidebar">
-    <h2>📦 My Shop</h2>
-    <div class="nav-item active" onclick="showTab('dashboard', event)">📊 Dashboard</div>
+    
+    <div class="nav-item" onclick="showTab('dashboard', event)">📊 Dashboard</div>
     <div class="nav-item" onclick="showTab('settings', event)">⚙️ Settings</div>
-     <div class="nav-item" onclick="showTab('contact', event)">💬 Contact & Feedback</div>
-     <div id="adminNavItem" class="nav-item" style="display:none;" onclick="showTab('admin', event)">🛠️ Admin Feedback</div>
-     <div id="adminNavItem" class="nav-item" style="display:none;" onclick="showTab('admin', event)">🛠️ Inbox</div>
+    <div class="nav-item" onclick="showTab('contact', event)">💬 Contact & Feedback</div>
+    <div id="adminNavItem" class="nav-item" style="display:none;" onclick="showTab('admin', event)">🔧 Admin Feedback</div>
+    <div id="adminInboxItem" class="nav-item" style="display:none;" onclick="showTab('inbox', event)">📥 Inbox</div>
     <div class="nav-item" onclick="logout()">🚪 Logout</div>
   </div>
 
-  <div class="main">
-    <div id="tab-dashboard">
-      <div class="header">
-        <button id="menuBtn" class="menu-btn">⋮</button>
-        <h1>Dashboard</h1>
-        <div id="profileArea"></div>
-        <div id="userLocation" class="user-location" style="display:none;">
-          <span>📍</span>
-          <span id="userCountry"></span>, <span id="userState"></span>
-        </div>
+  <!-- 2. OVERLAY - Right after sidebar -->
+  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+  <!-- 3. AUTH SCREEN -->
+  <div id="authScreen">
+    <div class="left-side">
+      <div id="loginForm">
+        <h1>Login</h1>
+        <div class="form-group"><label>Enter your email</label><input type="email" id="loginEmail" placeholder="email@example.com"></div>
+        <div class="form-group"><label>Enter your password</label><input type="password" id="loginPassword" placeholder="••••"></div>
+        <div class="forgot"><a onclick="openForgotModal()">Forgot Password?</a></div>
+        <button class="btn" id="loginBtn" onclick="login()">Login</button>
+        <div class="switch-text">Don't have an account? <a onclick="toggleForm('signup')">Sign Up</a></div>
+      </div>
+      
+      <div id="signupForm" style="display:none;">
+        <h1>Registration</h1>
+        <div class="form-group"><label>First Name</label><input type="text" id="firstName" placeholder="John"></div>
+        <div class="form-group"><label>Surname</label><input type="text" id="lastName" placeholder="Doe"></div>
+        <div class="form-group"><label>Other Name <span style="color:#64748b;">(optional)</span></label><input type="text" id="otherName" placeholder="Middle name"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="email@example.com"></div>
+        <div class="form-group"><label>Country</label><input type="text" id="country" placeholder="Enter your country"></div>
+        <div class="form-group"><label>State</label><input type="text" id="state" placeholder="Enter your state"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="••••"></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" id="confirmPassword" placeholder="••••"></div>
+        <button class="btn" onclick="signup()">Sign Up</button>
+        <div class="switch-text">Already have an account? <a onclick="toggleForm('login')">Login</a></div>
+      </div>
+    </div>
+    <div class="right-side"><img src="https://via.placeholder.com/400x400.png?text=Inventory" alt="Inventory"></div>
+  </div>
+
+  <!-- 4. DASHBOARD SCREEN - NO SIDEBAR INSIDE HERE -->
+  <div id="dashboardScreen">
+    <div class="top-header">
+      <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">☰</button>
+      <h2 style="font-size:18px;">Dashboard</h2>
+      <div class="header-right">
+        <div id="userLocation" class="user-location" style="display:none;"><span>📍</span><span id="userCountry"></span>, <span id="userState"></span></div>
+        <select id="currencySelect" class="dash-select">
+          <option value="$">$ USD</option>
+          <option value="€">€ EUR</option>
+          <option value="£">£ GBP</option>
+          <option value="₦">₦ NGN</option>
+          <option value="MAD">MAD</option>
+        </select>
+        <button class="dash-btn" onclick="openAddModal()">+ Add Product</button>
         <div class="profile-menu">
           <img id="navAvatar" src="https://ui-avatars.com/api/?name=User" class="nav-avatar">
-
           <div id="profileDropdown" class="profile-dropdown hidden">
-            <div class="profile-info">
-              <img id="modalAvatar" src="https://ui-avatars.com/api/?name=User">
-              <p id="modalName">User</p>
-              <p id="modalEmail"></p>
+            <div class="profile-info" style="text-align:center; margin-bottom:12px;">
+              <img id="modalAvatar" src="https://ui-avatars.com/api/?name=User" style="width:50px; height:50px; border-radius:50%; margin-bottom:8px;">
+              <p id="modalName" style="font-weight:600;">User</p>
+              <p id="modalEmail" style="font-size:13px; color:#9ca3af;"></p>
             </div>
-            <label class="upload-btn">
-              Change Photo
-              <input type="file" id="avatarUpload" accept="image/*" hidden>
-            </label>
-            <button id="openSettingsBtn">Edit Profile</button>
-            <button id="logoutBtn">Logout</button>
+            <button id="openSettingsBtn" class="dash-btn" style="width:100%; margin-bottom:8px;">Edit Profile</button>
+            <button id="logoutBtn" class="btn btn-secondary" style="width:100%;">Logout</button>
           </div>
         </div>
-
-        <div style="display:flex; gap:12px; align-items:center;">
-          <select id="currencySelect" class="dash-select">
-            <option value="$">$ USD</option>
-            <option value="€">€ EUR</option>
-            <option value="£">£ GBP</option>
-            <option value="₦">₦ NGN</option>
-            <option value="MAD">MAD</option>
-          </select>
-          <button class="dash-btn" onclick="openAddModal()">+ Add Product</button>
-        </div>
-      </div>
-
-      <div class="search-box">
-        <input type="text" id="searchInput" class="dash-input" placeholder="Search product name or ID..." onkeyup="searchProducts()">
-        <button class="dash-btn" onclick="searchProducts()">Search</button>
-      </div>
-
-      <div class="stats-grid">
-        <div class="card"><div class="card-label">Total Products</div><div class="card-value" id="totalProducts">0</div></div>
-        <div class="card"><div class="card-label">Stock Value</div><div class="card-value" id="stockValue">₦0.00</div></div>
-        <div class="card"><div class="card-label">Low Stock</div><div class="card-value" id="lowStock">0</div></div>
-        <div class="card"><div class="card-label">Total Sold</div><div class="card-value" id="totalSold">0</div></div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Product</th>
-              <th>Stock In</th>
-              <th>Stock Out</th>
-              <th>Available</th>
-              <th>Buy Price</th>
-              <th>Sell Price</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="productTable"></tbody>
-        </table>
-        <div id="emptyState" class="empty-state" style="display:none;">No products found</div>
       </div>
     </div>
 
-    <div id="tab-settings" style="display:none;">
-      <h1 style="margin-bottom:30px;">Settings</h1>
-      <div class="card" style="max-width:600px;">
-        <h3 style="margin-bottom:20px;">Edit Profile</h3>
-        <div class="form-group">
-          <label>First Name</label>
-          <input type="text" id="editFirstName" class="dash-input">
+    <div class="main">
+      <div id="tab-dashboard">
+        <div class="search-box"><input type="text" id="searchInput" class="dash-input" placeholder="Search product name or ID..." onkeyup="searchProducts()"><button class="dash-btn" onclick="searchProducts()">Search</button></div>
+        <div class="stats-grid">
+          <div class="card"><div class="card-label">Total Products</div><div class="card-value" id="totalProducts">0</div></div>
+          <div class="card"><div class="card-label">Stock Value</div><div class="card-value" id="stockValue">₦0.00</div></div>
+          <div class="card"><div class="card-label">Low Stock</div><div class="card-value" id="lowStock">0</div></div>
+          <div class="card"><div class="card-label">Total Sold</div><div class="card-value" id="totalSold">0</div></div>
         </div>
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" id="editLastName" class="dash-input">
+        <div class="table-container">
+          <table><thead><tr><th>ID</th><th>Product</th><th>Stock In</th><th>Stock Out</th><th>Available</th><th>Buy Price</th><th>Sell Price</th><th>Action</th></tr></thead><tbody id="productTable"></tbody></table>
+          <div id="emptyState" class="empty-state" style="display:none;">No products found</div>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label>Country</label>
-          <input type="text" id="editCountry" class="dash-input" placeholder="Enter your country">
+      <div id="tab-settings" style="display:none;">
+        <h1 style="margin-bottom:30px;">Settings</h1>
+        <div class="card" style="max-width:600px;">
+          <h3 style="margin-bottom:20px;">Edit Profile</h3>
+          <div class="form-group"><label>First Name</label><input type="text" id="editFirstName" class="dash-input"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" id="editLastName" class="dash-input"></div>
+          <div class="form-group"><label>Country</label><input type="text" id="editCountry" class="dash-input" placeholder="Enter your country"></div>
+          <div class="form-group"><label>State</label><input type="text" id="editState" class="dash-input" placeholder="Enter your state"></div>
+          <div class="form-group"><label>Email</label><input type="email" id="editEmail" class="dash-input" disabled></div>
+          <button class="btn" onclick="updateProfile()">Save Changes</button>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label>State</label>
-          <input type="text" id="editState" class="dash-input" placeholder="Enter your state">
+      <div id="tab-contact" style="display:none;">
+        <h1 style="margin-bottom:30px;">Contact & Feedback</h1>
+        <div class="card" style="max-width:600px; margin-bottom:20px;">
+          <h3 style="margin-bottom:15px;">Reach Me</h3>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <a href="https://wa.me/+2347046949987" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none;">💚 WhatsApp</a>
+            <a href="https://www.facebook.com/profile.php?id=100085230195633" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none; background:#1877f2;">📘 Facebook</a>
+            <a href="https://x.com/Zurkallain85941" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none; background:#1da1f2;">🐦 Twitter/X</a>
+          </div>
         </div>
+        <div class="card" style="max-width:600px; margin-bottom:20px;">
+          <h3 style="margin-bottom:15px;">Send New Message</h3>
+          <div class="form-group"><label>Subject</label><input type="text" id="feedbackSubject" class="dash-input" placeholder="What’s the issue?"></div>
+          <div class="form-group"><label>Message</label><textarea id="feedbackMessage" class="dash-input" rows="5" placeholder="Describe the problem..."></textarea></div>
+          <button class="btn" onclick="submitFeedback()">Send</button>
+          <p id="feedbackStatus" style="margin-top:10px; font-size:14px;"></p>
+        </div>
+        <div class="card" style="max-width:800px;">
+          <h3 style="margin-bottom:15px;">Your Conversations</h3>
+          <div id="userFeedbackList"></div>
+        </div>
+      </div>
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="editEmail" class="dash-input" disabled>
+      <div id="tab-admin" style="display:none;">
+        <h1 style="margin-bottom:20px;">Admin: User Feedback</h1>
+        <div class="table-container">
+          <table><thead><tr><th>Date</th><th>User</th><th>Subject</th><th>Message</th><th>Status</th><th>Action</th></tr></thead><tbody id="feedbackTable"></tbody></table>
+          <div id="feedbackEmpty" class="empty-state" style="display:none;">No feedback yet</div>
         </div>
-        <button class="btn" onclick="updateProfile()">Save Changes</button>
+      </div>
+
+      <div id="tab-inbox" style="display:none;">
+        <h1 style="margin-bottom:20px;">Admin Inbox</h1>
+        <div id="adminFeedbackList"></div>
       </div>
     </div>
   </div>
-</div>
-   <div id="tab-contact" style="display:none;">
-  <h1 style="margin-bottom:30px;">Contact & Feedback</h1>
+
+  <!-- MODALS -->
+  <div id="forgotModal" class="modal-overlay"><div class="modal"><h3>Reset Password</h3><input type="email" id="forgotEmail" class="dash-input" placeholder="Enter your email"><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn btn-secondary" onclick="closeForgotModal()">Cancel</button><button class="btn" onclick="sendResetEmail()">Send Reset Link</button></div></div></div>
   
-  <div class="card" style="max-width:600px; margin-bottom:20px;">
-    <h3 style="margin-bottom:15px;">Reach Me</h3>
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      <a href="https://wa.me/+2347046949987" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none;">
-        💚 WhatsApp
-      </a>
-      <a href="https://www.facebook.com/profile.php?id=100085230195633" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none; background:#1877f2;">
-        📘 Facebook
-      </a>
-      <a href="https://x.com/Zurkallain85941" target="_blank" class="dash-btn" style="text-align:center; text-decoration:none; background:#1da1f2;">
-        🐦 Twitter/X
-      </a>
-    </div>
-  </div>
-
-  <div class="card" style="max-width:600px; margin-bottom:20px;">
-    <h3 style="margin-bottom:15px;">Send New Message</h3>
-    <div class="form-group">
-      <label>Subject</label>
-      <input type="text" id="feedbackSubject" class="dash-input" placeholder="What’s the issue?">
-    </div>
-    <div class="form-group">
-      <label>Message</label>
-      <textarea id="feedbackMessage" class="dash-input" rows="5" placeholder="Describe the problem..."></textarea>
-    </div>
-    <button class="btn" onclick="submitFeedback()">Send</button>
-    <p id="feedbackStatus" style="margin-top:10px; font-size:14px;"></p>
-  </div>
-
-  <div class="card" style="max-width:800px;">
-    <h3 style="margin-bottom:15px;">Your Conversations</h3>
-    <div id="userFeedbackList"></div>
-  </div>
-   </div>
-   <div id="tab-admin" style="display:none;">
-  <h1 style="margin-bottom:20px;">Admin: User Feedback</h1>
+  <div id="addModal" class="modal-overlay"><div class="modal"><h3>Add Product</h3><input type="text" id="addName" class="dash-input" placeholder="Product Name" style="margin-bottom:12px;"><input type="number" id="addStockIn" class="dash-input" placeholder="Stock In Quantity" style="margin-bottom:12px;"><input type="number" id="addBuyPrice" class="dash-input" placeholder="Buy Price" style="margin-bottom:12px;"><input type="number" id="addSellPrice" class="dash-input" placeholder="Sell Price" style="margin-bottom:20px;"><div style="display:flex; gap:10px;"><button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button><button class="btn" onclick="addProduct()">Add</button></div></div></div>
   
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>User</th>
-          <th>Subject</th>
-          <th>Message</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="feedbackTable"></tbody>
-    </table>
-    <div id="feedbackEmpty" class="empty-state" style="display:none;">No feedback yet</div>
-  </div>
-   </div>
-   
-<div id="forgotModal" class="modal-overlay">
-  <div class="modal">
-    <h3>Reset Password</h3>
-    <input type="email" id="forgotEmail" class="dash-input" placeholder="Enter your email">
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeForgotModal()">Cancel</button>
-      <button class="btn" onclick="sendResetEmail()">Send Reset Link</button>
-    </div>
-  </div>
-</div>
-
-<div id="addModal" class="modal-overlay">
-  <div class="modal">
-    <h3>Add Product</h3>
-    <input type="text" id="addName" class="dash-input" placeholder="Product Name">
-    <input type="number" id="addStockIn" class="dash-input" placeholder="Stock In Quantity">
-    <input type="number" id="addBuyPrice" class="dash-input" placeholder="Buy Price">
-    <input type="number" id="addSellPrice" class="dash-input" placeholder="Sell Price">
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
-      <button class="btn" onclick="addProduct()">Add</button>
-    </div>
-  </div>
-</div>
-
-<div id="sellModal" class="modal-overlay">
-  <div class="modal">
-    <h3>Sell Product</h3>
-    <p id="sellProductName" style="margin-bottom:10px; color:#9ca3af;"></p>
-    <p id="sellAvailable" style="margin-bottom:20px; color:#9ca3af;"></p>
-    <input type="number" id="sellQty" class="dash-input" placeholder="Quantity to sell" min="1">
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeSellModal()">Cancel</button>
-      <button class="btn btn-success" onclick="confirmSell()">Sell</button>
-    </div>
-  </div>
-</div>
-
-<div id="stockInModal" class="modal-overlay">
-  <div class="modal">
-    <h3>Restock Product</h3>
-    <p id="stockInProductName" style="margin-bottom:20px; color:#9ca3af;"></p>
-    <input type="number" id="stockInQty" class="dash-input" placeholder="Quantity to add" min="1">
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeStockInModal()">Cancel</button>
-      <button class="btn btn-warning" onclick="confirmStockIn()">Add Stock</button>
-    </div>
-  </div>
-</div>
-
+  <div id="sellModal" class="modal-overlay"><div class="modal"><h3>Sell Product</h3><p id="sellProductName" style="margin-bottom:10px; color:#9ca3af;"></p><p id="sellAvailable" style="margin-bottom:20px; color:#9ca3af;"></p><input type="number" id="sellQty" class="dash-input" placeholder="Quantity to sell" min="1" style="margin-bottom:20px;"><div style="display:flex; gap:10px;"><button class="btn btn-secondary" onclick="closeSellModal()">Cancel</button><button class="btn btn-success" onclick="confirmSell()">Sell</button></div></div></div>
+  
+  <div id="stockInModal" class="modal-overlay"><div class="modal"><h3>Restock Product</h3><p id="stockInProductName" style="margin-bottom:20px; color:#9ca3af;"></p><input type="number" id="stockInQty" class="dash-input" placeholder="Quantity to add" min="1" style="margin-bottom:20px;"><div style="display:flex; gap:10px;"><button class="btn btn-secondary" onclick="closeStockInModal()">Cancel</button><button class="btn btn-warning" onclick="confirmStockIn()">Add Stock</button></div></div></div>
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
@@ -474,44 +552,48 @@ let allProducts = []
 let currentUser = null
 let selectedProduct = null
 
+function safeEvent(id, event, callback){
+  const el = document.getElementById(id);
+  if(el) el.addEventListener(event, callback);
+}
+
 async function checkSession() {
   try {
-    const { data: { user }, error } = await _supabase.auth.getUser()
+    const { data: { session }, error } = await _supabase.auth.getSession()
     if (error) throw error
-
-    if (user) {
-      currentUser = user
+    
+    if (session && session.user) {
+      currentUser = session.user
       document.getElementById('authScreen').style.display = 'none'
-      document.getElementById('dashboardScreen').style.display = 'flex'
-      document.getElementById('tab-dashboard').style.display = 'block'
-      loadHeaderProfile()
-      loadUserLocation()
-      updateCurrencyByCountry(user.user_metadata?.country)
-      loadProducts()
+      document.getElementById('dashboardScreen').style.display = 'block'
+document.getElementById('dashboardScreen').classList.add('active')
+      
+      await loadHeaderProfile()
+      await loadUserLocation()
+      await loadProducts()
+      await loadUserFeedback()
+      
+      if (currentUser.email === 'muhammadzurkallaini8@gmail.com') {
+        document.getElementById('adminNavItem').style.display = 'flex'
+        document.getElementById('adminInboxItem').style.display = 'flex'
+        showTab('inbox')
+        loadAdminFeedback()
+      } else {
+        showTab('dashboard')
+      }
     } else {
       document.getElementById('authScreen').style.display = 'flex'
       document.getElementById('dashboardScreen').style.display = 'none'
+      toggleForm('login')
     }
-  } catch (e) {
-    console.error('Session check failed:', e)
+  } catch (err) {
+    console.log('Session check:', err.message)
     document.getElementById('authScreen').style.display = 'flex'
-    document.getElementById('dashboardScreen').style.display = 'none'
+    toggleForm('login')
   }
 }
-
 checkSession()
-function toggleForm() {
-  const login = document.getElementById('loginForm')
-  const signup = document.getElementById('signupForm')
 
-  if(login.style.display === 'none') {
-    login.style.display = 'block'
-    signup.style.display = 'none'
-  } else {
-    login.style.display = 'none'
-    signup.style.display = 'block'
-  }
-   }
 async function signup(){
   const firstName = document.getElementById('firstName').value.trim()
   const lastName = document.getElementById('lastName').value.trim()
@@ -527,22 +609,12 @@ async function signup(){
   if(password.length < 6) return alert("Password must be at least 6 characters")
 
   const { error } = await _supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        other_name: otherName,
-        country: country,
-        state: state
-      }
-    }
+    email, password,
+    options: { data: { first_name: firstName, last_name: lastName, other_name: otherName, country: country, state: state } }
   })
-
   if(error) return alert('Signup Error: ' + error.message)
   alert('Success! Check your email to confirm your account, then login')
-  toggleForm()
+  toggleForm('login')
 }
 
 async function login(){
@@ -551,10 +623,18 @@ async function login(){
   const { data, error } = await _supabase.auth.signInWithPassword({ email, password })
   if(error) return alert('Login Error: ' + error.message)
   currentUser = data.user
-  showDashboard()
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('dashboardScreen').style.display = 'block';
+document.getElementById('dashboardScreen').classList.add('active');
+  await loadHeaderProfile()
+  await loadUserLocation()
+  await loadProducts()
+  await loadUserFeedback()
 }
 
-function openForgotModal() { document.getElementById('forgotModal').classList.add('active') }
+function openForgotModal() { 
+document.getElementById('forgotModal').classList.add('active') 
+}
 function closeForgotModal(){
   document.getElementById('forgotModal').classList.remove('active')
   document.getElementById('forgotEmail').value = ''
@@ -563,9 +643,7 @@ function closeForgotModal(){
 async function sendResetEmail(){
   const email = document.getElementById('forgotEmail').value.trim()
   if(!email) return alert('Please enter your email')
-  const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin
-  })
+  const { error } = await _supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin })
   alert(error? 'Error: ' + error.message : 'If an account exists, a reset link has been sent!')
   closeForgotModal()
 }
@@ -577,234 +655,148 @@ async function logout(){
   document.getElementById('authScreen').style.display = 'flex'
 }
 
-function showDashboard() {
-  document.getElementById('authScreen').style.display = 'none'
-  document.getElementById('dashboardScreen').style.display = 'flex'
-  loadProfile()
-  loadHeaderProfile()
-  loadUserLocation()
+function showTab(tab, event) {
+  // Remove active from all nav items
+document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+// Add active to clicked nav-item - use currentTarget not target
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.add('active');
+  }
+
+  // Show/hide tabs
+  document.getElementById('tab-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none';
+  document.getElementById('tab-settings').style.display = tab === 'settings' ? 'block' : 'none';
+  document.getElementById('tab-contact').style.display = tab === 'contact' ? 'block' : 'none';
+  document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none';
+  document.getElementById('tab-inbox').style.display = tab === 'inbox' ? 'block' : 'none';
+
+  // Load data
+  if (tab === 'settings') loadProfile();
+  if (tab === 'contact') loadUserFeedback();
+  if (tab === 'admin') loadFeedback();
+  if (tab === 'inbox') loadAdminFeedback();
+
+  // Close sidebar on mobile after clicking menu item
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  if(sidebar && window.innerWidth <= 1024) {
+    sidebar.classList.remove('open'); // use 'open' not 'show'
+    overlay.classList.remove('open');
+  }
+}
+
+function openAddModal(){ document.getElementById('addModal').classList.add('active') }
+function closeAddModal(){
+  document.getElementById('addModal').classList.remove('active')
+  document.getElementById('addName').value = ''
+  document.getElementById('addStockIn').value = ''
+  document.getElementById('addBuyPrice').value = ''
+  document.getElementById('addSellPrice').value = ''
+}
+
+function openSellModal(product){
+  selectedProduct = product
+  const available = (product.stock_in || 0) - (product.stock_out || 0)
+  document.getElementById('sellProductName').textContent = product.name
+  document.getElementById('sellAvailable').textContent = `Available: ${available}`
+  document.getElementById('sellQty').value = ''
+  document.getElementById('sellModal').classList.add('active')
+}
+
+function closeSellModal(){
+  document.getElementById('sellModal').classList.remove('active')
+  selectedProduct = null
+}
+
+async function confirmSell(){
+  const qty = parseInt(document.getElementById('sellQty').value)
+  if(!qty || qty <= 0) return alert('Enter valid quantity')
+  const available = (selectedProduct.stock_in || 0) - (selectedProduct.stock_out || 0)
+  if(qty > available) return alert('Not enough stock!')
+
+  const newStockOut = (selectedProduct.stock_out || 0) + qty
+  const { error } = await _supabase.from('products')
+    .update({ stock_out: newStockOut })
+    .eq('id', selectedProduct.id)
+
+  if(error) return alert('Error: ' + error.message)
+  alert(`Sold ${qty} ${selectedProduct.name}`)
+  closeSellModal()
   loadProducts()
 }
 
-function showTab(tab, event) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
-  if (event && event.target) event.target.classList.add('active')
-  
-  document.getElementById('tab-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none'
-  document.getElementById('tab-settings').style.display = tab === 'settings' ? 'block' : 'none'
-  document.getElementById('tab-contact').style.display = tab === 'contact' ? 'block' : 'none'
-  document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none'
-
-  if (tab === 'settings') loadProfile()
-  if (tab === 'contact') loadUserFeedback()
-  if (tab === 'admin') { loadFeedback()
-   }
-
-async function checkSession() {
-  const { data: { user } = await _supabase.auth.getUser()
-  if (user) {
-    currentUser = user
-    if (user.email === 'muhammadzurkallaini8@gmail.com') {
-      document.getElementById('adminNavItem').style.display = 'flex'
-    }
-    document.getElementById('authScreen').style.display = 'none'
-    document.getElementById('dashboardScreen').style.display = 'flex'
-    document.getElementById('tab-dashboard').style.display = 'block'
-    loadHeaderProfile()
-    loadUserLocation()
-    updateCurrencyByCountry(user.user_metadata?.country)
-    loadProducts()
-  } else {
-    document.getElementById('authScreen').style.display = 'flex'
-    document.getElementById('dashboardScreen').style.display = 'none'
-  }
+function openStockInModal(product){
+  selectedProduct = product
+  document.getElementById('stockInProductName').textContent = product.name
+  document.getElementById('stockInQty').value = ''
+  document.getElementById('stockInModal').classList.add('active')
 }
 
-// User submits feedback
-async function submitFeedback() {
-  const subject = document.getElementById('feedbackSubject').value.trim()
-  const message = document.getElementById('feedbackMessage').value.trim()
-  const statusEl = document.getElementById('feedbackStatus')
-  
-  if (!subject || !message) {
-    statusEl.textContent = 'Fill both fields'
-    statusEl.style.color = '#f87171'
-    return
-  }
-
-  const { error } = await _supabase.from('feedback').insert([{
-    user_id: currentUser.id,
-    email: currentUser.email,
-    subject,
-    message,
-    status: 'open'
-  }])
-
-  if (error) {
-    statusEl.textContent = 'Error: ' + error.message
-    statusEl.style.color = '#f87171'
-  } else {
-    statusEl.textContent = 'Message sent!'
-    statusEl.style.color = '#4ade80'
-    document.getElementById('feedbackSubject').value = ''
-    document.getElementById('feedbackMessage').value = ''
-    loadUserFeedback()
-  }
+function closeStockInModal(){
+  document.getElementById('stockInModal').classList.remove('active')
+  selectedProduct = null
 }
 
-// Load user's own threads
-async function loadUserFeedback() {
-  const { data: threads } = await _supabase
-    .from('feedback')
-    .select('*, feedback_replies(*)')
-    .eq('user_id', currentUser.id)
-    .order('created_at', { ascending: false })
+async function confirmStockIn(){
+  const qty = parseInt(document.getElementById('stockInQty').value)
+  if(!qty || qty <= 0) return alert('Enter valid quantity')
 
-  const container = document.getElementById('userFeedbackList')
-  if (!threads || threads.length === 0) {
-    container.innerHTML = '<p style="color:#9ca3af;">No messages yet</p>'
-    return
-  }
+  const newStockIn = (selectedProduct.stock_in || 0) + qty
+  const { error } = await _supabase.from('products')
+    .update({ stock_in: newStockIn })
+    .eq('id', selectedProduct.id)
 
-  container.innerHTML = threads.map(t => renderThread(t, false)).join('')
+  if(error) return alert('Error: ' + error.message)
+  alert(`Added ${qty} to ${selectedProduct.name}`)
+  closeStockInModal()
+  loadProducts()
 }
 
-// Load admin inbox
-async function loadAdminFeedback() {
-  const { data: threads } = await _supabase
-    .from('feedback')
-    .select('*, feedback_replies(*)')
-    .order('created_at', { ascending: false })
-
-  const container = document.getElementById('adminFeedbackList')
-  if (!threads || threads.length === 0) {
-    container.innerHTML = '<p style="color:#9ca3af;">Inbox empty</p>'
-    return
-  }
-
-  container.innerHTML = threads.map(t => renderThread(t, true)).join('')
-}
-
-// Render one thread
-function renderThread(thread, isAdmin) {
-  const repliesHtml = thread.feedback_replies
-    .sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
-    .map(r => `
-      <div style="background:#0f1117; padding:10px; border-radius:8px; margin:8px 0; border-left:3px solid ${r.sender_email === 'your-email@gmail.com' ? '#3b82f6' : '#16a34a'};">
-        <div style="font-size:12px; color:#9ca3af;">${r.sender_email} • ${new Date(r.created_at).toLocaleString()}</div>
-        <div style="margin-top:5px; white-space:pre-wrap;">${r.message}</div>
-      </div>
-    `).join('')
-
-  return `
-    <div style="background:#1a1d24; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #2a2e37;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <strong>${thread.subject}</strong>
-          <div style="font-size:12px; color:#9ca3af;">${thread.email} • ${new Date(thread.created_at).toLocaleString()}</div>
-        </div>
-        <span style="padding:4px 10px; border-radius:12px; font-size:12px; background:${thread.status==='open'?'#f59e0b':'#16a34a'};">
-          ${thread.status}
-        </span>
-      </div>
-      
-      <div style="background:#0f1117; padding:10px; border-radius:8px; margin:10px 0;">
-        ${thread.message}
-      </div>
-      
-      ${repliesHtml}
-      
-      <div style="display:flex; gap:8px; margin-top:10px;">
-        <input type="text" id="reply-${thread.id}" class="dash-input" placeholder="Write a reply..." style="flex:1;">
-        <button class="dash-btn" onclick="sendReply(${thread.id})">Send</button>
-        ${isAdmin ? `
-          <select onchange="updateStatus(${thread.id}, this.value)" class="dash-select">
-            <option value="open" ${thread.status==='open'?'selected':''}>Open</option>
-            <option value="replied" ${thread.status==='replied'?'selected':''}>Replied</option>
-            <option value="resolved" ${thread.status==='resolved'?'selected':''}>Resolved</option>
-          </select>
-        ` : ''}
-      </div>
-    </div>
-  `
-}
-
-// Send a reply
-async function sendReply(feedbackId) {
-  const input = document.getElementById(`reply-${feedbackId}`)
-  const message = input.value.trim()
-  if (!message) return
-
-  const { error } = await _supabase.from('feedback_replies').insert([{
-    feedback_id: feedbackId,
-    sender_id: currentUser.id,
-    sender_email: currentUser.email,
-    message: message
-  }])
-
-  if (error) {
-    alert('Error: ' + error.message)
-  } else {
-    input.value = ''
-    await _supabase.from('feedback').update({ status: 'replied' }).eq('id', feedbackId)
-    if (currentUser.email === 'muhammadzurkallaini8@gmail.com') {
-      loadAdminFeedback()
-    } else {
-      loadUserFeedback()
-    }
-  }
-}
-
-async function updateFeedbackStatus(id, status) {
-  await _supabase.from('feedback').update({ status }).eq('id', id)
-  loadAdminFeedback()
-}
-
-async function loadProfile() {
+async function loadHeaderProfile() {
   const { data: { user }} = await _supabase.auth.getUser()
-  if (user) {
-    document.getElementById('editFirstName').value = user.user_metadata.first_name || ''
-    document.getElementById('editLastName').value = user.user_metadata.last_name || ''
-    document.getElementById('editCountry').value = user.user_metadata.country || ''
-    document.getElementById('editState').value = user.user_metadata.state || ''
-    document.getElementById('editEmail').value = user.email
-    updateCurrencyByCountry(user.user_metadata.country)
+  if (!user) return
+  const name = `${user.user_metadata.first_name || ''} ${user.user_metadata.last_name || ''}`.trim() || 'User'
+  const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`
+  document.getElementById('navAvatar').src = avatar
+  document.getElementById('modalAvatar').src = avatar
+  document.getElementById('modalName').textContent = name
+  document.getElementById('modalEmail').textContent = user.email
+}
+
+async function loadUserLocation() {
+  const { data: { user }} = await _supabase.auth.getUser()
+  if (!user) return
+  const country = user.user_metadata.country || ''
+  const state = user.user_metadata.state || ''
+  if (country || state) {
+    document.getElementById('userCountry').textContent = country
+    document.getElementById('userState').textContent = state
+    document.getElementById('userLocation').style.display = 'flex'
   }
 }
 
-async function updateProfile() {
-  const { error } = await _supabase.auth.updateUser({
-    data: {
-      first_name: document.getElementById('editFirstName').value,
-      last_name: document.getElementById('editLastName').value,
-      country: document.getElementById('editCountry').value,
-      state: document.getElementById('editState').value
-    }
-  })
-
-  if (error) {
-    alert('Error: ' + error.message)
-    return
-  }
-
-  alert('Profile updated!')
-  loadHeaderProfile()
-  loadUserLocation()
-  updateCurrencyByCountry(document.getElementById('editCountry').value)
-}
-
-document.getElementById('currencySelect').addEventListener('change', (e) => {
-  currentCurrency = e.target.value
+function updateCurrencyByCountry(country) {
+  const currencyEl = document.getElementById('currencySelect')
+  if (!currencyEl) return
+  const countryLower = (country || '').toLowerCase().trim()
+  let currency = '$'
+  if (countryLower === 'nigeria') currency = '₦'
+  else if (countryLower === 'ghana') currency = '₵'
+  else if (countryLower === 'kenya') currency = 'KSh'
+  else if (countryLower === 'uk' || countryLower === 'united kingdom') currency = '£'
+  else if (countryLower === 'morocco') currency = 'MAD'
+  currencyEl.value = currency
+  currentCurrency = currency
   renderProducts(allProducts)
-})
+}
+
+function formatPrice(amount) {
+  return Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 
 async function loadProducts() {
   const { data, error } = await _supabase.from('products').select('*').order('id', { ascending: false })
-  if(error) {
-    console.error(error)
-    alert('Error loading products: ' + error.message)
-    return
-  }
+  if(error) { console.error(error); return }
   allProducts = data
   renderProducts(data)
 }
@@ -817,85 +809,6 @@ function searchProducts(){
   )
   renderProducts(filtered)
 }
-
-async function loadHeaderProfile() {
-  const { data: { user }} = await _supabase.auth.getUser()
-  if (!user) return
-
-  const name = `${user.user_metadata.first_name || ''} ${user.user_metadata.last_name || ''}`.trim() || 'User'
-  const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`
-
-  document.getElementById('navAvatar').src = avatar
-  document.getElementById('modalAvatar').src = avatar
-  document.getElementById('modalName').textContent = name
-  document.getElementById('modalEmail').textContent = user.email
-}
-
-async function loadUserLocation() {
-  const { data: { user }} = await _supabase.auth.getUser()
-  if (!user) return
-
-  const country = user.user_metadata.country || ''
-  const state = user.user_metadata.state || ''
-
-  if (country || state) {
-    document.getElementById('userCountry').textContent = country
-    document.getElementById('userState').textContent = state
-    document.getElementById('userLocation').style.display = 'flex'
-  }
-}
-
-function updateCurrencyByCountry(country) {
-  const currencyEl = document.getElementById('currencySelect')
-  if (!currencyEl) return
-
-  const countryLower = (country || '').toLowerCase().trim()
-  let currency = '$'
-
-  if (countryLower === 'nigeria') {
-    currency = '₦'
-  } else if (countryLower === 'ghana') {
-    currency = '₵'
-  } else if (countryLower === 'kenya') {
-    currency = 'KSh'
-  } else if (countryLower === 'uk' || countryLower === 'united kingdom' || countryLower === 'britain') {
-    currency = '£'
-  } else if (countryLower === 'morocco') {
-    currency = 'MAD'
-  }
-
-  currencyEl.value = currency
-  currentCurrency = currency
-  renderProducts(allProducts)
-}
-
-function formatPrice(amount) {
-  return Number(amount || 0).toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })
-}
-
-document.getElementById('avatarUpload').addEventListener('change', async (e) => {
-  const file = e.target.files[0]
-  if (!file) return
-
-  const { data: { user }} = await _supabase.auth.getUser()
-  const filePath = `${user.id}/${Date.now()}-${file.name}`
-
-  const { error: uploadError } = await _supabase.storage
-.from('avatars')
-.upload(filePath, file, { upsert: true })
-
-  if (uploadError) return alert('Upload failed: ' + uploadError.message)
-
-  const { data: { publicUrl }} = _supabase.storage.from('avatars').getPublicUrl(filePath)
-
-  await _supabase.auth.updateUser({ data: { avatar_url: publicUrl } })
-  document.getElementById('navAvatar').src = publicUrl
-  document.getElementById('modalAvatar').src = publicUrl
-  alert('Profile photo updated!')
-})
 
 function renderProducts(data){
   const totalValue = data.reduce((sum, p) => sum + ((p.buy_price || 0) * (p.stock_in || 0)), 0)
@@ -924,24 +837,14 @@ function renderProducts(data){
         <td>${currentCurrency}${formatPrice(p.buy_price || 0)}</td>
         <td>${currentCurrency}${formatPrice(p.sell_price || 0)}</td>
         <td>
-          <div class="action-btns">
+          <div style="display:flex; gap:8px;">
             <button class="dash-btn btn-success" onclick='openSellModal(${JSON.stringify(p)})' ${available <= 0? 'disabled' : ''}>Sell</button>
             <button class="dash-btn btn-warning" onclick='openStockInModal(${JSON.stringify(p)})'>Stock In</button>
           </div>
         </td>
-      </tr>
-      `
+      </tr>`
     }).join('')
   }
-}
-
-function openAddModal(){ document.getElementById('addModal').classList.add('active') }
-function closeAddModal(){
-  document.getElementById('addModal').classList.remove('active')
-  document.getElementById('addName').value = ''
-  document.getElementById('addStockIn').value = ''
-  document.getElementById('addBuyPrice').value = ''
-  document.getElementById('addSellPrice').value = ''
 }
 
 async function addProduct(){
@@ -952,12 +855,7 @@ async function addProduct(){
   if(!name) return alert('Enter product name')
 
   const { error } = await _supabase.from('products').insert([{
-    name,
-    stock_in,
-    stock_out: 0,
-    buy_price,
-    sell_price,
-    user_id: currentUser.id
+    name, stock_in, stock_out: 0, buy_price, sell_price, user_id: currentUser.id
   }])
 
   if(error) return alert('Error: ' + error.message)
@@ -966,72 +864,34 @@ async function addProduct(){
   loadProducts()
 }
 
-function openSellModal(product){
-  selectedProduct = product
-  const available = (product.stock_in || 0) - (product.stock_out || 0)
-  document.getElementById('sellProductName').textContent = product.name
-  document.getElementById('sellAvailable').textContent = `Available: ${available}`
-  document.getElementById('sellQty').value = ''
-  document.getElementById('sellModal').classList.add('active')
+async function loadProfile() {
+  const { data: { user }} = await _supabase.auth.getUser()
+  if (user) {
+    document.getElementById('editFirstName').value = user.user_metadata.first_name || ''
+    document.getElementById('editLastName').value = user.user_metadata.last_name || ''
+    document.getElementById('editCountry').value = user.user_metadata.country || ''
+    document.getElementById('editState').value = user.user_metadata.state || ''
+    document.getElementById('editEmail').value = user.email
+    updateCurrencyByCountry(user.user_metadata.country)
+  }
 }
 
-function closeSellModal(){
-  document.getElementById('sellModal').classList.remove('active')
-  selectedProduct = null
+async function updateProfile() {
+  const { error } = await _supabase.auth.updateUser({
+    data: {
+      first_name: document.getElementById('editFirstName').value,
+      last_name: document.getElementById('editLastName').value,
+      country: document.getElementById('editCountry').value,
+      state: document.getElementById('editState').value
+    }
+  })
+  if (error) { alert('Error: ' + error.message); return }
+  alert('Profile updated!')
+  loadHeaderProfile()
+  loadUserLocation()
+  updateCurrencyByCountry(document.getElementById('editCountry').value)
 }
 
-async function confirmSell(){
-  const qty = parseInt(document.getElementById('sellQty').value)
-  if(!qty || qty <= 0) return alert('Enter valid quantity')
-  const available = (selectedProduct.stock_in || 0) - (selectedProduct.stock_out || 0)
-  if(qty > available) return alert('Not enough stock!')
-
-  const newStockOut = (selectedProduct.stock_out || 0) + qty
-  const { error } = await _supabase.from('products')
-.update({ stock_out: newStockOut })
-.eq('id', selectedProduct.id)
-
-  if(error) return alert('Error: ' + error.message)
-
-  await _supabase.from('sales_history').insert([{
-    product_id: selectedProduct.id,
-    product_name: selectedProduct.name,
-    quantity: qty,
-    sell_price: selectedProduct.sell_price || 0,
-    user_id: currentUser.id
-  }])
-
-  alert(`Sold ${qty} ${selectedProduct.name}`)
-  closeSellModal()
-  loadProducts()
-}
-
-function openStockInModal(product){
-  selectedProduct = product
-  document.getElementById('stockInProductName').textContent = product.name
-  document.getElementById('stockInQty').value = ''
-  document.getElementById('stockInModal').classList.add('active')
-}
-
-function closeStockInModal(){
-  document.getElementById('stockInModal').classList.remove('active')
-  selectedProduct = null
-}
-
-async function confirmStockIn(){
-  const qty = parseInt(document.getElementById('stockInQty').value)
-  if(!qty || qty <= 0) return alert('Enter valid quantity')
-
-  const newStockIn = (selectedProduct.stock_in || 0) + qty
-  const { error } = await _supabase.from('products')
-.update({ stock_in: newStockIn })
-.eq('id', selectedProduct.id)
-
-  if(error) return alert('Error: ' + error.message)
-  alert(`Added ${qty} to ${selectedProduct.name}`)
-  closeStockInModal()
-  loadProducts()
-}
 async function submitFeedback() {
   const subject = document.getElementById('feedbackSubject').value.trim()
   const message = document.getElementById('feedbackMessage').value.trim()
@@ -1042,7 +902,6 @@ async function submitFeedback() {
     statusEl.style.color = '#f87171'
     return
   }
-  
   if (!currentUser) {
     statusEl.textContent = 'You must be logged in'
     statusEl.style.color = '#f87171'
@@ -1052,9 +911,7 @@ async function submitFeedback() {
   const { error } = await _supabase.from('feedback').insert([{
     user_id: currentUser.id,
     email: currentUser.email,
-    subject,
-    message,
-    status: 'open'
+    subject, message, status: 'open'
   }])
 
   if (error) {
@@ -1065,19 +922,34 @@ async function submitFeedback() {
     statusEl.style.color = '#4ade80'
     document.getElementById('feedbackSubject').value = ''
     document.getElementById('feedbackMessage').value = ''
+    loadUserFeedback()
   }
 }
-   async function loadFeedback() {
-  const { data, error } = await _supabase
+async function loadUserFeedback() {
+  if (!currentUser) return; // safety check so no error before login
+  
+  const { data: threads } = await _supabase
     .from('feedback')
-    .select('*')
+    .select('*, feedback_replies(*)')
+    .eq('user_id', currentUser.id)
     .order('created_at', { ascending: false })
-
-  if (error) {
-    console.error(error)
+  const container = document.getElementById('userFeedbackList')
+  if (!threads || threads.length === 0) {
+    container.innerHTML = '<p style="color:#9ca3af;">No messages yet</p>'
     return
   }
-
+  container.innerHTML = threads.map(t => `
+    <div style="background:#1a1d24; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #2a2e37;">
+      <strong>${t.subject}</strong>
+      <div style="font-size:12px; color:#9ca3af; margin:5px 0;">${new Date(t.created_at).toLocaleString()}</div>
+      <div style="background:#0f1117; padding:10px; border-radius:8px;">${t.message}</div>
+      <span style="padding:4px 10px; border-radius:12px; font-size:12px; background:${t.status==='open'?'#f59e0b':'#16a34a'}; margin-top:8px; display:inline-block;">${t.status}</span>
+    </div>
+  `).join('')
+}
+async function loadFeedback() {
+  const { data, error } = await _supabase.from('feedback').select('*').order('created_at', { ascending: false })
+  if (error) { console.error(error); return }
   const tbody = document.getElementById('feedbackTable')
   const empty = document.getElementById('feedbackEmpty')
   
@@ -1101,26 +973,157 @@ async function submitFeedback() {
           <option value="replied" ${f.status==='replied'?'selected':''}>Replied</option>
           <option value="resolved" ${f.status==='resolved'?'selected':''}>Resolved</option>
         </select>
-        <button class="dash-btn" onclick="replyToFeedback('${f.email}', '${f.subject.replace(/'/g, "\\'")}')">Reply</button>
       </td>
     </tr>
   `).join('')
 }
 
 async function updateFeedbackStatus(id, status) {
-  const { error } = await _supabase.from('feedback').update({ status }).eq('id', id)
-  if (error) alert('Error: ' + error.message)
+  await _supabase.from('feedback').update({ status }).eq('id', id)
+  loadFeedback()
 }
 
-function replyToFeedback(email, subject) {
-  const reply = prompt(`Reply to ${email}\nRe: ${subject}\n\nType your reply:`)
-  if (reply) {
-    window.open(`mailto:${email}?subject=Re: ${encodeURIComponent(subject)}&body=${encodeURIComponent(reply)}`)
-    alert('Opening your email app. After sending, set status to "Replied".')
+async function replyToFeedback(feedbackId) {
+  const input = document.getElementById(`user-reply-${feedbackId}`)
+  const message = input.value.trim()
+  if (!message) return
+
+  const { error } = await _supabase.from('feedback_replies').insert([{
+    feedback_id: feedbackId,
+    sender_id: currentUser.id,
+    sender_email: currentUser.email,
+    message: message
+  }])
+
+  if (error) {
+    alert('Error: ' + error.message)
+  } else {
+    input.value = ''
+    await _supabase.from('feedback').update({ status: 'open' }).eq('id', feedbackId)
+    loadUserFeedback()
   }
 }
 
-// Make functions global so onclick works
+async function sendReply(feedbackId) {
+  const input = document.getElementById(`reply-${feedbackId}`)
+  const message = input.value.trim()
+  if (!message) return
+
+  const { error } = await _supabase.from('feedback_replies').insert([{
+    feedback_id: feedbackId,
+    sender_id: currentUser.id,
+    sender_email: currentUser.email,
+    message: message
+  }])
+
+  if (error) {
+    alert('Error: ' + error.message)
+  } else {
+    input.value = ''
+    await _supabase.from('feedback').update({ status: 'replied' }).eq('id', feedbackId)
+    if (currentUser.email === 'muhammadzurkallaini8@gmail.com') {
+      loadAdminFeedback()
+    } else {
+      loadUserFeedback()
+    }
+  }
+}
+
+async function loadAdminFeedback() {
+  const { data: threads, error } = await _supabase
+    .from('feedback')
+    .select('*, feedback_replies(*)')
+    .order('created_at', { ascending: false })
+
+  if (error) { console.error(error); return }
+
+  const container = document.getElementById('adminFeedbackList')
+  if (!threads || threads.length === 0) {
+    container.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:40px;">Inbox empty</p>'
+    return
+  }
+  
+  container.innerHTML = threads.map(t => `
+    <div style="background:#1a1d24; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #2a2e37;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div>
+          <strong style="color:#e2e8f0;">${t.subject}</strong>
+          <div style="font-size:12px; color:#9ca3af;">${t.email} • ${new Date(t.created_at).toLocaleString()}</div>
+        </div>
+        <span style="padding:4px 10px; border-radius:12px; font-size:12px; background:${t.status==='open'?'#f59e0b':'#16a34a'}; color:white;">${t.status}</span>
+      </div>
+      
+      <div style="background:#0f1117; padding:10px; border-radius:8px; margin:10px 0; color:#e2e8f0;">${t.message}</div>
+      
+      ${t.feedback_replies && t.feedback_replies.length > 0 ? `
+        <div style="margin:10px 0; padding:10px; background:#0a0c10; border-radius:8px;">
+          <strong style="color:#9ca3af; font-size:12px;">Replies:</strong>
+          ${t.feedback_replies.map(r => `
+            <div style="margin-top:8px; padding:8px; background:#1a1d24; border-radius:6px;">
+              <div style="font-size:11px; color:#9ca3af;">${r.sender_email} • ${new Date(r.created_at).toLocaleString()}</div>
+              <div style="color:#e2e8f0; margin-top:4px;">${r.message}</div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+      
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <input type="text" id="reply-${t.id}" class="dash-input" placeholder="Write a reply..." style="flex:1;">
+        <button class="dash-btn" onclick="sendReply(${t.id})">Send</button>
+        <select onchange="updateFeedbackStatus(${t.id}, this.value)" class="dash-select" style="width:auto;">
+          <option value="open" ${t.status==='open'?'selected':''}>Open</option>
+          <option value="replied" ${t.status==='replied'?'selected':''}>Replied</option>
+          <option value="resolved" ${t.status==='resolved'?'selected':''}>Resolved</option>
+        </select>
+      </div>
+    </div>
+  `).join('')
+}
+
+function toggleForm(formType) {
+  const loginForm = document.getElementById('loginForm')
+  const signupForm = document.getElementById('signupForm')
+  const authScreen = document.getElementById('authScreen')
+  
+  if (!loginForm || !signupForm || !authScreen) {
+    console.error('Missing HTML divs: loginForm, signupForm, or authScreen')
+    return
+  }
+  
+  if (formType === 'login') {
+    loginForm.style.display = 'block'
+    signupForm.style.display = 'none'
+  } else {
+    loginForm.style.display = 'none'
+    signupForm.style.display = 'block'
+  }
+}
+function toggleMenu() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+console.log('Menu toggled');
+}
+
+function closeMenu() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// Close when clicking overlay
+document.getElementById('overlay').onclick = closeMenu;
+
+// Close when clicking ANY nav item
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', closeMenu);
+});
+window.toggleForm = toggleForm
+window.login = login
+window.signup = signup
+window.logout = logout
+window.openForgotModal = openForgotModal
+window.closeForgotModal = closeForgotModal
+window.sendResetEmail = sendResetEmail
+window.showTab = showTab
 window.openAddModal = openAddModal
 window.closeAddModal = closeAddModal
 window.addProduct = addProduct
@@ -1130,42 +1133,33 @@ window.confirmSell = confirmSell
 window.openStockInModal = openStockInModal
 window.closeStockInModal = closeStockInModal
 window.confirmStockIn = confirmStockIn
-window.showTab = showTab
-window.logout = logout
-window.updateProfile = updateProfile
 window.searchProducts = searchProducts
-window.toggleForm = toggleForm
-window.login = login
-window.signup = signup
-window.openForgotModal = openForgotModal
-window.closeForgotModal = closeForgotModal
-window.sendResetEmail = sendResetEmail
+window.updateProfile = updateProfile
 window.submitFeedback = submitFeedback
 window.sendReply = sendReply
 window.updateFeedbackStatus = updateFeedbackStatus
 window.replyToFeedback = replyToFeedback
 window.loadFeedback = loadFeedback
-   
+window.loadHeaderProfile = loadHeaderProfile
+window.loadUserLocation = loadUserLocation
+window.updateCurrencyByCountry = updateCurrencyByCountry
+window.toggleMenu = toggleMenu
 
-document.getElementById('menuBtn').addEventListener('click', () => {
-  document.querySelector('.sidebar').classList.toggle('show')
-})
-
-document.getElementById('navAvatar').addEventListener('click', () => {
+safeEvent('navAvatar', 'click', () => {
   document.getElementById('profileDropdown').classList.toggle('hidden')
 })
 
-document.getElementById('openSettingsBtn').addEventListener('click', () => {
+safeEvent('openSettingsBtn', 'click', () => {
   document.getElementById('profileDropdown').classList.add('hidden')
   showTab('settings', { target: document.querySelector('.nav-item:nth-child(2)') })
 })
 
-document.getElementById('logoutBtn').addEventListener('click', logout)
+safeEvent('logoutBtn', 'click', logout)
 
-// Close dropdown when clicking outside
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.profile-menu')) {
-    document.getElementById('profileDropdown').classList.remove('show')
+    const dropdown = document.getElementById('profileDropdown')
+    if(dropdown) dropdown.classList.add('hidden')
   }
 })
 </script>
